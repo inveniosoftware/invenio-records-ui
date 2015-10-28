@@ -26,20 +26,88 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint, render_template
-from flask_babelex import gettext as _
+from functools import partial
 
-blueprint = Blueprint(
-    'invenio_records_ui',
-    __name__,
-    template_folder='templates',
-    static_folder='static',
-)
+from flask import Blueprint, abort, current_app, render_template
+from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError, \
+    PIDMissingObjectError
+from invenio_pidstore.resolver import Resolver
+from invenio_records.api import Record
+
+from .signals import record_viewed
 
 
-@blueprint.route("/")
-def index():
-    """Basic view."""
+def create_blueprint(endpoints, with_tombstone=True):
+    """Create Invenio-Records-UI blueprint.
+
+    :param blueprint: Name of blueprint (important for url_for).
+    :param url_prefix: URL prefix for blueprint.
+    :param pid_type: Persistent identifier type to create blueprint for.
+    :param routing: Dictionary describing routing for views.
+    """
+    blueprint = Blueprint(
+        'invenio_records_ui',
+        __name__,
+        url_prefix='',
+        template_folder='templates',
+        static_folder='static',
+    )
+
+    for endpoint, options in (endpoints or {}).items():
+        blueprint.add_url_rule(**create_url_rule(endpoint, **options))
+
+    return blueprint
+
+
+def create_url_rule(endpoint, route=None, pid_type=None, pid_provider=None,
+                    template=None):
+    """Create Werkzeug URL rule."""
+    assert route
+    assert pid_type
+
+    return dict(
+        endpoint=endpoint,
+        rule=route,
+        view_func=partial(
+            record_view,
+            resolver=Resolver(pid_type=pid_type, pid_provider=pid_provider,
+                              obj_type='rec', getter=Record.get_record),
+            template=template or 'invenio_records_ui/detail.html'),
+    )
+
+
+def record_view(pid_value=None, resolver=None, template=None, **kwargs):
+    """Display record for a given persistent identifier value.
+
+    .. warning::
+
+       The two parameters ``resolver`` and ``template`` should not be included
+       in the URL rule, but set by defaults to the view.
+
+
+    :param pid_value: Persistent identifier.
+    :param resolver: An instance of a persistent identifier resolver. A
+        persistent identifier resolver takes care of resolving persistent
+        identifiers into internal objects.
+    :param template: Template to render.
+    """
+    try:
+        pid, record = resolver.resolve(pid_value)
+    except PIDDeletedError:
+        abort(410)
+    except (PIDDoesNotExistError, PIDMissingObjectError):
+        abort(404)
+    # except PIDMergedError as e:
+    #     return redirect(url_for(
+    #         request.endpoint, pid_value=e.new_pid_value, **kwargs))
+
+    record_viewed.send(
+        current_app._get_current_object(),
+        pid=record,
+        record=record,
+    )
     return render_template(
-        "invenio_records_ui/index.html",
-        module_name=_('Invenio-Records-UI'))
+        template,
+        pid=pid,
+        record=record,
+    )

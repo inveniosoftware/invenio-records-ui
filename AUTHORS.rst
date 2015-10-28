@@ -27,4 +27,4 @@ Authors
 
 User interface for Invenio-Records.
 
-- CERN <info@invenio-software.org>
+- Lars Holm Nielsen <lars.holm.nielsen@cern.ch>

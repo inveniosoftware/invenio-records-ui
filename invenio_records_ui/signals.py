@@ -22,5 +22,30 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
--e git+https://github.com/inveniosoftware/invenio-pidstore.git@next#egg=invenio-pidstore
--e git+https://github.com/inveniosoftware/invenio-records.git@next#egg=invenio-records
+"""Record module signals."""
+
+from blinker import Namespace
+
+_signals = Namespace()
+
+
+record_viewed = _signals.signal('record-viewed')
+"""Signal is sent when a detailed view of record is displayed.
+
+Parameters:
+    sender - current Flask application object.
+    pid - persistent identifier instance
+    record - record instance
+
+
+Example subscriber:
+
+.. code-block:: python
+     from flask import request
+
+     def subscriber(sender, record=None, pid=None):
+         ...
+
+Note, the signal is always sent in a request context, thus it is safe to
+access the current request and/or current user objects.
+"""
