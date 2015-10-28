@@ -30,20 +30,35 @@ Run example development server:
 .. code-block:: console
 
    $ cd examples
-   $ python app.py
+   $ flask -a app.py db init
+   $ flask -a app.py db create
+   $ flask -a app.py --debug run
 """
 
 from __future__ import absolute_import, print_function
 
 from flask import Flask
 from flask_babelex import Babel
+from flask_cli import FlaskCLI
+from flask_celeryext import FlaskCeleryExt
+from invenio_db import InvenioDB
+from invenio_pidstore import InvenioPIDStore
+from invenio_records import InvenioRecords
 
 from invenio_records_ui import InvenioRecordsUI
 
 # Create Flask application
 app = Flask(__name__)
+app.config.update(dict(
+    CELERY_ALWAYS_EAGER=True,
+    CELERY_RESULT_BACKEND="cache",
+    CELERY_CACHE_BACKEND="memory",
+    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+))
+FlaskCeleryExt(app)
+FlaskCLI(app)
 Babel(app)
+InvenioDB(app)
+InvenioPIDStore(app)
+InvenioRecords(app)
 InvenioRecordsUI(app)
-
-if __name__ == "__main__":
-    app.run()

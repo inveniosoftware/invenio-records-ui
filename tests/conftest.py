@@ -27,15 +27,50 @@
 
 from __future__ import absolute_import, print_function
 
+import os
+
 import pytest
 from flask import Flask
+from flask_babelex import Babel
+from flask_celeryext import FlaskCeleryExt
+from flask_cli import FlaskCLI
+from invenio_db import InvenioDB, db
+from invenio_pidstore import InvenioPIDStore
+from invenio_records import InvenioRecords
+from sqlalchemy_utils.functions import create_database, drop_database
 
 
 @pytest.fixture()
-def app():
+def app(request):
     """Flask application fixture."""
     app = Flask('testapp')
     app.config.update(
-        TESTING=True
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI=os.environ.get(
+            'SQLALCHEMY_DATABASE_URI', 'sqlite://'
+        ),
+        CELERY_ALWAYS_EAGER=True,
+        CELERY_RESULT_BACKEND="cache",
+        CELERY_CACHE_BACKEND="memory",
+        CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
     )
+    FlaskCeleryExt(app)
+    FlaskCLI(app)
+    Babel(app)
+    InvenioDB(app)
+    InvenioPIDStore(app)
+    InvenioRecords(app)
+
+    with app.app_context():
+        if app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://':
+            create_database(db.engine.url)
+        db.create_all()
+
+    def finalize():
+        with app.app_context():
+            db.drop_all()
+            if app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://':
+                drop_database(db.engine.url)
+
+    request.addfinalizer(finalize)
     return app
