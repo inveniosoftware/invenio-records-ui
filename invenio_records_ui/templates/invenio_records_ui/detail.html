@@ -1,6 +1,7 @@
 {%- extends config.RECORDS_UI_BASE_TEMPLATE %}
 
 {%- block page_body %}
-{{_('Welcome to %(module_name)s', module_name=module_name)}}
+{{record.title}}
+{{pid.pid_value}}
 {%- endblock %}
 

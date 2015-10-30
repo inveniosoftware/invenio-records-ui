@@ -46,7 +46,7 @@ tests_require = [
 
 extras_require = {
     'docs': [
-        "Sphinx>=1.3",
+        'Sphinx>=1.3',
     ],
     'tests': tests_require,
 }
@@ -61,6 +61,8 @@ setup_requires = [
 
 install_requires = [
     'Flask-BabelEx>=0.9.2',
+    'invenio-records>=1.0.0.dev20150000',
+    'invenio-pidstore>=1.0.0.dev20150000',
 ]
 
 packages = find_packages()
@@ -119,7 +121,14 @@ setup(
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    entry_points={},
+    entry_points={
+        'invenio_base.apps': [
+            'invenio_records_ui = invenio_records_ui:InvenioRecordsUI',
+        ],
+        'invenio_i18n.translations': [
+            'messages = invenio_records_ui'
+        ],
+    },
     extras_require=extras_require,
     install_requires=install_requires,
     setup_requires=setup_requires,
