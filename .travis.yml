@@ -34,8 +34,8 @@ cache:
   - pip
 
 env:
-#  - REQUIREMENTS=lowest
-#  - REQUIREMENTS=release
+  - REQUIREMENTS=lowest
+  - REQUIREMENTS=release
   - REQUIREMENTS=devel
 
 python:
