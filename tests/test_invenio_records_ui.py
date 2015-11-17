@@ -27,10 +27,12 @@
 
 from __future__ import absolute_import, print_function
 
+import uuid
+
 from flask import Flask, request
 from invenio_db import db
-from invenio_pidstore.models import PersistentIdentifier
-from invenio_records.api import Record, before_record_insert
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+from invenio_records.api import Record
 
 from invenio_records_ui import InvenioRecordsUI
 from invenio_records_ui.signals import record_viewed
@@ -38,33 +40,49 @@ from invenio_records_ui.signals import record_viewed
 
 def setup_record_fixture(app):
     """Setup a record fixture."""
-    records = []
+    with app.app_context():
+        # Record 1 - Live record
+        rec_uuid = uuid.uuid4()
+        pid1 = PersistentIdentifier.create(
+            'recid', '1', object_type='rec', object_uuid=rec_uuid,
+            status=PIDStatus.REGISTERED)
+        Record.create({'title': 'Registered', 'recid': 1}, id_=rec_uuid)
 
-    def _create_pid(record):
+        # Record 2 - Deleted PID with record
+        rec_uuid = uuid.uuid4()
         pid = PersistentIdentifier.create(
-            'recid', record['recid'], pid_provider='recid')
-        pid.assign('rec', record['recid'])
-        pid.register()
+            'recid', '2', object_type='rec', object_uuid=rec_uuid,
+            status=PIDStatus.REGISTERED)
+        pid.delete()
+        Record.create({'title': 'Live '}, id_=rec_uuid)
 
-    with before_record_insert.connected_to(_create_pid):
-        with app.app_context():
-            records.append(Record.create(
-                {'title': 'Test record 1', 'recid': 1},
-                identifier_key='recid'
-            ))
-            records.append(Record.create(
-                {'title': 'Test record 2', 'recid': 2},
-                identifier_key='recid'
-            ))
-            pid = PersistentIdentifier.create('recid', 3, pid_provider='recid')
-            db.session.add(pid)
-            db.session.commit()
+        # Record 3 - Deleted PID without a record
+        PersistentIdentifier.create(
+            'recid', '3', status=PIDStatus.DELETED)
 
-            pid = PersistentIdentifier.get('recid', 2, pid_provider='recid')
-            pid.delete()
-            db.session.commit()
+        # Record 4 - Registered PID without a record
+        PersistentIdentifier.create(
+            'recid', '4', status=PIDStatus.REGISTERED)
 
-    return records
+        # Record 5 - Redirected PID
+        pid = PersistentIdentifier.create(
+            'recid', '5', status=PIDStatus.REGISTERED)
+        pid.redirect(pid1)
+
+        # Record 6 - Redirected non existing endpoint
+        rec_uuid = uuid.uuid4()
+        Record.create({'title': 'DOI', }, id_=rec_uuid)
+        doi = PersistentIdentifier.create(
+            'doi', '10.1234/foo', status=PIDStatus.REGISTERED,
+            object_type='rec', object_uuid=rec_uuid)
+        pid = PersistentIdentifier.create(
+            'recid', '6', status=PIDStatus.REGISTERED)
+        pid.redirect(doi)
+
+        # Record 7 - Unregistered PID
+        PersistentIdentifier.create(
+            'recid', '7', status=PIDStatus.RESERVED)
+        db.session.commit()
 
 
 def test_version():
@@ -99,12 +117,23 @@ def test_view(app):
         res = client.get("/records/2")
         assert res.status_code == 410
 
-        # Missing object
         res = client.get("/records/3")
-        assert res.status_code == 404
+        assert res.status_code == 410
 
-        # No pid, no record
+        # Missing object
         res = client.get("/records/4")
+        assert res.status_code == 500
+
+        # Redirected PID
+        res = client.get("/records/5")
+        assert res.status_code == 302
+
+        # Non existing endpoint
+        res = client.get("/records/6")
+        assert res.status_code == 500
+
+        # Unregistered PID
+        res = client.get("/records/7")
         assert res.status_code == 404
 
 
@@ -133,32 +162,22 @@ def test_changed_views(app):
     app.config.update(dict(
         PIDSTORE_DATACITE_DOI_PREFIX="10.4321",
         RECORDS_UI_ENDPOINTS=dict(
-            records=dict(
+            recid=dict(
                 pid_type='recid',
-                pid_provider='recid',
                 route='/records/<pid_value>',
             ),
             references=dict(
                 pid_type='recid',
-                pid_provider='recid',
                 route='/records/<pid_value>/references',
             ),
-            dois=dict(
+            doi=dict(
                 pid_type='doi',
-                pid_provider='doi',
                 route='/doi/<path:pid_value>',
             )
         )
     ))
     InvenioRecordsUI(app)
     setup_record_fixture(app)
-
-    with app.app_context():
-        pid = PersistentIdentifier.create(
-            'doi', '10.1234/foo.bar', pid_provider='doi')
-        pid.assign('rec', '1')
-        pid.register()
-        db.session.commit()
 
     with app.test_client() as client:
         res = client.get("/records/1")
@@ -167,5 +186,5 @@ def test_changed_views(app):
         res = client.get("/records/1/references")
         assert res.status_code == 200
 
-        res = client.get("/doi/10.1234/foo.bar")
+        res = client.get("/doi/10.1234/foo")
         assert res.status_code == 200

@@ -22,7 +22,7 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""User interface for Invenio-Records."""
+"""Flask extension for Invenio-Records-UI."""
 
 from __future__ import absolute_import, print_function
 
@@ -30,7 +30,11 @@ from .views import create_blueprint
 
 
 class InvenioRecordsUI(object):
-    """Invenio-Records-UI extension."""
+    """Invenio-Records-UI extension.
+
+    The extension takes care of setting default configuration and registering
+    a blueprint with URL routes for the endpoints.
+    """
 
     def __init__(self, app=None):
         """Extension initialization."""
@@ -43,25 +47,28 @@ class InvenioRecordsUI(object):
 
         # Register records blueprints
         app.register_blueprint(
-            create_blueprint(app.config["RECORDS_UI_ENDPOINTS"])
-        )
+            create_blueprint(app.config["RECORDS_UI_ENDPOINTS"]))
 
         app.extensions['invenio-records-ui'] = self
 
     def init_config(self, app):
-        """Initialize configuration."""
+        """Initialize configuration on application."""
         app.config.setdefault(
             "RECORDS_UI_BASE_TEMPLATE",
             app.config.get("BASE_TEMPLATE",
                            "invenio_records_ui/base.html"))
 
+        # Tombstones
+        app.config.setdefault(
+            "RECORDS_UI_TOMBSTONE_TEMPLATE",
+            "invenio_records_ui/tombstone.html")
+
         # Set up endpoints for viewing records.
         app.config.setdefault(
             "RECORDS_UI_ENDPOINTS",
             dict(
-                record=dict(
+                recid=dict(
                     pid_type='recid',
-                    pid_provider='recid',
                     route='/records/<pid_value>',
                     template='invenio_records_ui/detail.html',
                 ),

@@ -30,22 +30,22 @@ _signals = Namespace()
 
 
 record_viewed = _signals.signal('record-viewed')
-"""Signal is sent when a detailed view of record is displayed.
+"""Signal sent when a record is viewed on any endpoint.
 
 Parameters:
-    sender - current Flask application object.
-    pid - persistent identifier instance
-    record - record instance
+
+- ``sender`` - a Flask application object.
+- ``pid`` - a persistent identifier instance.
+- ``record`` - a record instance.
 
 
-Example subscriber:
+Example receiver:
 
 .. code-block:: python
-     from flask import request
 
-     def subscriber(sender, record=None, pid=None):
-         ...
+   def receiver(sender, record=None, pid=None):
+       # ...
 
 Note, the signal is always sent in a request context, thus it is safe to
-access the current request and/or current user objects.
+access the current request and/or current user objects inside the receiver.
 """

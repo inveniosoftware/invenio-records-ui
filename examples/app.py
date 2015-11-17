@@ -32,7 +32,20 @@ Run example development server:
    $ cd examples
    $ flask -a app.py db init
    $ flask -a app.py db create
+   $ flask -a app.py fixtures load
    $ flask -a app.py --debug run
+
+View some records in your browser::
+
+   http://localhost:5000/records/1
+   http://localhost:5000/records/2
+   http://localhost:5000/records/3
+   http://localhost:5000/records/4
+   http://localhost:5000/records/5
+   http://localhost:5000/records/6
+   http://localhost:5000/records/7
+   http://localhost:5000/records/8
+   http://localhost:5000/records/9
 """
 
 from __future__ import absolute_import, print_function
@@ -41,7 +54,7 @@ from flask import Flask
 from flask_babelex import Babel
 from flask_cli import FlaskCLI
 from flask_celeryext import FlaskCeleryExt
-from invenio_db import InvenioDB
+from invenio_db import InvenioDB, db
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
@@ -62,3 +75,56 @@ InvenioDB(app)
 InvenioPIDStore(app)
 InvenioRecords(app)
 InvenioRecordsUI(app)
+
+
+@app.cli.group()
+def fixtures():
+    """Command for working with test data."""
+
+
+@fixtures.command()
+def load():
+    """Load test data fixture."""
+    import uuid
+    from invenio_records.api import Record
+    from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+
+    # Record 1 - Live record
+    with db.session.begin_nested():
+        rec_uuid = uuid.uuid4()
+        pid1 = PersistentIdentifier.create(
+            'recid', '1', object_type='rec', object_uuid=rec_uuid,
+            status=PIDStatus.REGISTERED)
+        Record.create({'title': 'Registered '}, id_=rec_uuid)
+
+        # Record 2 - Deleted PID with record
+        rec_uuid = uuid.uuid4()
+        pid = PersistentIdentifier.create(
+            'recid', '2', object_type='rec', object_uuid=rec_uuid,
+            status=PIDStatus.REGISTERED)
+        pid.delete()
+        Record.create({'title': 'Live '}, id_=rec_uuid)
+
+        # Record 3 - Deleted PID without a record
+        PersistentIdentifier.create(
+            'recid', '3', status=PIDStatus.DELETED)
+
+        # Record 4 - Registered PID without a record
+        PersistentIdentifier.create(
+            'recid', '4', status=PIDStatus.REGISTERED)
+
+        # Record 5 - Redirected PID
+        pid = PersistentIdentifier.create(
+            'recid', '5', status=PIDStatus.REGISTERED)
+        pid.redirect(pid1)
+
+        # Record 6 - Redirected non existing endpoint
+        doi = PersistentIdentifier.create(
+            'doi', '10.1234/foo', status=PIDStatus.REGISTERED)
+        pid = PersistentIdentifier.create(
+            'recid', '6', status=PIDStatus.REGISTERED)
+        pid.redirect(doi)
+
+        # Record 7 - Unregistered PID
+        PersistentIdentifier.create(
+            'recid', '7', status=PIDStatus.RESERVED)

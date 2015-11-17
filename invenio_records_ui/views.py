@@ -22,28 +22,31 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""User interface for Invenio-Records."""
+"""Factory for creating a blueprint for Invenio-Records-UI."""
 
 from __future__ import absolute_import, print_function
 
 from functools import partial
 
-from flask import Blueprint, abort, current_app, render_template
+from flask import Blueprint, abort, current_app, redirect, render_template, \
+    url_for
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError, \
-    PIDMissingObjectError
+    PIDMissingObjectError, PIDRedirectedError, PIDUnregistered
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
+from werkzeug.routing import BuildError
 
 from .signals import record_viewed
 
 
-def create_blueprint(endpoints, with_tombstone=True):
-    """Create Invenio-Records-UI blueprint.
+def create_blueprint(endpoints):
+    """Factory for Invenio-Records-UI blueprint creation.
 
-    :param blueprint: Name of blueprint (important for url_for).
-    :param url_prefix: URL prefix for blueprint.
-    :param pid_type: Persistent identifier type to create blueprint for.
-    :param routing: Dictionary describing routing for views.
+    The factory installs one URL route per endpoint defined, and adds an
+    error handler for rendering tombstones.
+
+    :param endpoints: Dictionary of endpoints to be installed. See usage
+        documentation for further details.
     """
     blueprint = Blueprint(
         'invenio_records_ui',
@@ -53,15 +56,34 @@ def create_blueprint(endpoints, with_tombstone=True):
         static_folder='static',
     )
 
+    @blueprint.errorhandler(PIDDeletedError)
+    def tombstone_errorhandler(error):
+        return render_template(
+            current_app.config['RECORDS_UI_TOMBSTONE_TEMPLATE'],
+            pid=error.pid,
+            record=error.record or {},
+        ), 410
+
     for endpoint, options in (endpoints or {}).items():
         blueprint.add_url_rule(**create_url_rule(endpoint, **options))
 
     return blueprint
 
 
-def create_url_rule(endpoint, route=None, pid_type=None, pid_provider=None,
-                    template=None):
-    """Create Werkzeug URL rule."""
+def create_url_rule(endpoint, route=None, pid_type=None, template=None):
+    """Create Werkzeug URL rule for a specific endpoint.
+
+    The method takes care of creating a persistent identifier resolver
+    for the given persistent identifier type.
+
+    :param endpoint: Name of endpoint.
+    :param route: URL route (must include ``<pid_value>`` pattern). Required.
+    :param pid_type: Persistent identifier type for endpoint. Required.
+    :param template: Template to render. Defaults to
+        ``invenio_records_ui/detail.html``.
+    :returns: a dictionary that can be passed as keywords arguments to
+        ``Blueprint.add_url_rule``.
+    """
     assert route
     assert pid_type
 
@@ -70,22 +92,26 @@ def create_url_rule(endpoint, route=None, pid_type=None, pid_provider=None,
         rule=route,
         view_func=partial(
             record_view,
-            resolver=Resolver(pid_type=pid_type, pid_provider=pid_provider,
-                              obj_type='rec', getter=Record.get_record),
+            resolver=Resolver(pid_type=pid_type, object_type='rec',
+                              getter=Record.get_record),
             template=template or 'invenio_records_ui/detail.html'),
     )
 
 
 def record_view(pid_value=None, resolver=None, template=None, **kwargs):
-    """Display record for a given persistent identifier value.
+    """Generic view for displaying a record.
 
-    .. warning::
+    The two parameters ``resolver`` and ``template`` should not be included
+    in the URL rule, but instead set by creating a partially evaluated function
+    of the view.
 
-       The two parameters ``resolver`` and ``template`` should not be included
-       in the URL rule, but set by defaults to the view.
+    The template being rendered is passed two variables in the template
+    context:
 
+    - ``pid``
+    - ``record``.
 
-    :param pid_value: Persistent identifier.
+    :param pid_value: Persistent identifier value.
     :param resolver: An instance of a persistent identifier resolver. A
         persistent identifier resolver takes care of resolving persistent
         identifiers into internal objects.
@@ -93,17 +119,31 @@ def record_view(pid_value=None, resolver=None, template=None, **kwargs):
     """
     try:
         pid, record = resolver.resolve(pid_value)
-    except PIDDeletedError:
-        abort(410)
-    except (PIDDoesNotExistError, PIDMissingObjectError):
+    except (PIDDoesNotExistError, PIDUnregistered):
         abort(404)
-    # except PIDMergedError as e:
-    #     return redirect(url_for(
-    #         request.endpoint, pid_value=e.new_pid_value, **kwargs))
+    except PIDMissingObjectError as e:
+        current_app.logger.exception(
+            "No object assigned to {0}.".format(e.pid),
+            extra={'pid': e.pid})
+        abort(500)
+    except PIDRedirectedError as e:
+        try:
+            return redirect(url_for(
+                'invenio_records_ui.{0}'.format(e.destination_pid.pid_type),
+                pid_value=e.destination_pid.pid_value))
+        except BuildError:
+            current_app.logger.exception(
+                "Invalid redirect - pid_type '{0}' endpoint missing.".format(
+                    e.destination_pid.pid_type),
+                extra={
+                    'pid': e.pid,
+                    'destination_pid': e.destination_pid,
+                })
+            abort(500)
 
     record_viewed.send(
         current_app._get_current_object(),
-        pid=record,
+        pid=pid,
         record=record,
     )
     return render_template(
