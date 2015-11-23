@@ -32,7 +32,7 @@ Run example development server:
    $ cd examples
    $ flask -a app.py db init
    $ flask -a app.py db create
-   $ flask -a app.py fixtures load
+   $ flask -a app.py fixtures records
    $ flask -a app.py --debug run
 
 View some records in your browser::
@@ -83,7 +83,7 @@ def fixtures():
 
 
 @fixtures.command()
-def load():
+def records():
     """Load test data fixture."""
     import uuid
     from invenio_records.api import Record
@@ -91,7 +91,7 @@ def load():
 
     # Record 1 - Live record
     with db.session.begin_nested():
-        rec_uuid = uuid.uuid4()
+        rec_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee5'
         pid1 = PersistentIdentifier.create(
             'recid', '1', object_type='rec', object_uuid=rec_uuid,
             status=PIDStatus.REGISTERED)

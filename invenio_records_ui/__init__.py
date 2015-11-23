@@ -94,8 +94,10 @@ variables in the template context:
 Installing endpoints
 ~~~~~~~~~~~~~~~~~~~~
 We have now configured which endpoint we want, so we can go ahead and install
-the extension:
+the extension (note, in this example we switch off the permission checking
+capabilities by setting ``RECORDS_UI_DEFAULT_PERMISSION_FACTORY`` to ``None``):
 
+>>> app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY'] = None
 >>> ext_records_ui = InvenioRecordsUI(app)
 
 In order for the following examples to work, you need to work within an
@@ -244,6 +246,42 @@ If we now try to access the record
 Viewed record 1
 >>> res.status_code
 200
+
+Access control
+--------------
+Invenio-Records-UI is integrated with Flask-Principal to provide access control
+to records. To protect access to a record you must provide a
+*permission factory*. A permission factory is a simple method which takes a
+record and returns an permission instance:
+
+>>> from flask_principal import Permission, RoleNeed
+>>> def perm_factory(record):
+...     return Permission(RoleNeed('admin'))
+
+This allows the permission factory to make use of any information inside and
+outside of the record in order to create a permission to protect it. This
+allows very fine-grained control with who can access which record and how you
+protect it.
+
+The permission factory you can apply globally to all endpoints by
+setting ``RECORDS_UI_DEFAULT_PERMISSION_FACTORY`` to the import path of the
+permission factory:
+
+>>> app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY'] = \
+...     'invenio_records.permissions:permission_factory'
+
+Alternatively you can also apply a permission factory to only a specific
+endpoint by passing the ``permission_factory_imp`` argument:
+
+>>> app.config["RECORDS_UI_ENDPOINTS"] = dict(
+...     recid=dict(
+...         pid_type='recid',
+...         route='/records/<pid_value>',
+...         template='invenio_records_ui/detail.html',
+...         permission_factory_imp=
+...         'invenio_records.permissions:permission_factory'
+...     ),
+... )
 """
 
 from __future__ import absolute_import, print_function

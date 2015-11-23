@@ -29,10 +29,18 @@ from __future__ import absolute_import, print_function
 
 import uuid
 
-from flask import Flask, request
+from flask import Flask, request, url_for
+from flask_menu import Menu
+from flask_security.utils import encrypt_password
+from invenio_access import InvenioAccess
+from invenio_access.models import ActionUsers
+from invenio_accounts import InvenioAccounts
+from invenio_accounts.views import blueprint as accounts_blueprint
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
+from invenio_records.permissions import records_read_all
 
 from invenio_records_ui import InvenioRecordsUI
 from invenio_records_ui.signals import record_viewed
@@ -188,3 +196,71 @@ def test_changed_views(app):
 
         res = client.get("/doi/10.1234/foo")
         assert res.status_code == 200
+
+
+def test_permission(app):
+    """Test permission control to records."""
+    app.config.update(
+        WTF_CSRF_ENABLED=False,
+        SECRET_KEY='CHANGEME',
+        SECURITY_PASSWORD_SALT='CHANGEME',
+        # conftest switches off permission checking, so re-enable it for this
+        # app.
+        RECORDS_UI_DEFAULT_PERMISSION_FACTORY='invenio_records'
+                                              '.permissions:permission_factory'
+    )
+    Menu(app)
+    InvenioRecordsUI(app)
+    accounts = InvenioAccounts(app)
+    app.register_blueprint(accounts_blueprint)
+    InvenioAccess(app)
+    setup_record_fixture(app)
+
+    # Create admin
+    with app.app_context():
+        admin = accounts.datastore.create_user(
+            email='admin@invenio-software.org',
+            password=encrypt_password('123456'),
+            active=True,
+        )
+        reader = accounts.datastore.create_user(
+            email='reader@invenio-software.org',
+            password=encrypt_password('123456'),
+            active=True,
+        )
+
+        # Get record 1
+        r = Resolver(pid_type='recid', object_type='rec',
+                     getter=Record.get_record)
+        dummy_pid, record = r.resolve('1')
+
+        # Setup permissions for record 1 (grant 'admin', deny 'reader')
+        db.session.add(ActionUsers(
+            action=records_read_all.value, argument=str(record.id),
+            user=admin))
+        db.session.add(ActionUsers(
+            action=records_read_all.value, argument=str(record.id),
+            user=reader, exclude=True))
+        db.session.commit()
+
+    with app.test_request_context():
+        login_url = url_for('security.login')
+        record_url = url_for('invenio_records_ui.recid', pid_value='1')
+
+    # Access record 1 as admin
+    with app.test_client() as client:
+        res = client.get(record_url)
+        assert res.status_code == 302
+        res = client.post(login_url, data={
+            'email': 'admin@invenio-software.org', 'password': '123456'})
+        assert res.status_code == 302
+        res = client.get(record_url)
+        res.status_code == 200
+
+    # Access record 1 as reader
+    with app.test_client() as client:
+        res = client.post(login_url, data={
+            'email': 'reader@invenio-software.org', 'password': '123456'})
+        assert res.status_code == 302
+        res = client.get(record_url)
+        res.status_code == 403

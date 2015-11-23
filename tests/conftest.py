@@ -53,6 +53,7 @@ def app(request):
         CELERY_RESULT_BACKEND="cache",
         CELERY_CACHE_BACKEND="memory",
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+        RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None,  # No permission checking
     )
     FlaskCeleryExt(app)
     FlaskCLI(app)

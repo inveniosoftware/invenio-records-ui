@@ -29,14 +29,19 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 from flask import Blueprint, abort, current_app, redirect, render_template, \
-    url_for
+    request, url_for
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError, \
     PIDMissingObjectError, PIDRedirectedError, PIDUnregistered
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
+from werkzeug.local import LocalProxy
 from werkzeug.routing import BuildError
+from werkzeug.utils import import_string
 
 from .signals import record_viewed
+
+current_permission_factory = LocalProxy(
+    lambda: current_app.extensions['invenio-records-ui'].permission_factory)
 
 
 def create_blueprint(endpoints):
@@ -70,7 +75,8 @@ def create_blueprint(endpoints):
     return blueprint
 
 
-def create_url_rule(endpoint, route=None, pid_type=None, template=None):
+def create_url_rule(endpoint, route=None, pid_type=None, template=None,
+                    permission_factory_imp=None):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -81,11 +87,16 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None):
     :param pid_type: Persistent identifier type for endpoint. Required.
     :param template: Template to render. Defaults to
         ``invenio_records_ui/detail.html``.
+    :param permission_factory: Import path to factory that creates a permission
+        object for a given record.
     :returns: a dictionary that can be passed as keywords arguments to
         ``Blueprint.add_url_rule``.
     """
     assert route
     assert pid_type
+
+    permission_factory = import_string(permission_factory_imp) if \
+        permission_factory_imp else None
 
     return dict(
         endpoint=endpoint,
@@ -94,11 +105,13 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None):
             record_view,
             resolver=Resolver(pid_type=pid_type, object_type='rec',
                               getter=Record.get_record),
-            template=template or 'invenio_records_ui/detail.html'),
+            template=template or 'invenio_records_ui/detail.html',
+            permission_factory=permission_factory),
     )
 
 
-def record_view(pid_value=None, resolver=None, template=None, **kwargs):
+def record_view(pid_value=None, resolver=None, template=None,
+                permission_factory=None, **kwargs):
     """Generic view for displaying a record.
 
     The two parameters ``resolver`` and ``template`` should not be included
@@ -140,6 +153,19 @@ def record_view(pid_value=None, resolver=None, template=None, **kwargs):
                     'destination_pid': e.destination_pid,
                 })
             abort(500)
+
+    # Check permissions
+    permission_factory = permission_factory or current_permission_factory
+    if permission_factory:
+        # Note, cannot be done in one line due overloading of boolean
+        # operations permission object.
+        if not permission_factory(record).can():
+            from flask_login import current_user
+            if not current_user.is_authenticated():
+                return redirect(url_for(
+                    current_app.config['RECORDS_UI_LOGIN_ENDPOINT'],
+                    next=request.url))
+            abort(403)
 
     record_viewed.send(
         current_app._get_current_object(),

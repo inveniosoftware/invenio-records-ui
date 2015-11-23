@@ -26,7 +26,26 @@
 
 from __future__ import absolute_import, print_function
 
+from werkzeug.utils import import_string
+
 from .views import create_blueprint
+
+
+class _RecordUIState(object):
+    """Record UI state."""
+
+    def __init__(self, app):
+        """Initialize state."""
+        self.app = app
+        self._permission_factory = None
+
+    @property
+    def permission_factory(self):
+        """Load default permission factory."""
+        if self._permission_factory is None:
+            imp = self.app.config["RECORDS_UI_DEFAULT_PERMISSION_FACTORY"]
+            self._permission_factory = import_string(imp) if imp else None
+        return self._permission_factory
 
 
 class InvenioRecordsUI(object):
@@ -49,7 +68,7 @@ class InvenioRecordsUI(object):
         app.register_blueprint(
             create_blueprint(app.config["RECORDS_UI_ENDPOINTS"]))
 
-        app.extensions['invenio-records-ui'] = self
+        app.extensions['invenio-records-ui'] = _RecordUIState(app)
 
     def init_config(self, app):
         """Initialize configuration on application."""
@@ -62,6 +81,12 @@ class InvenioRecordsUI(object):
         app.config.setdefault(
             "RECORDS_UI_TOMBSTONE_TEMPLATE",
             "invenio_records_ui/tombstone.html")
+
+        app.config.setdefault(
+            "RECORDS_UI_DEFAULT_PERMISSION_FACTORY",
+            "invenio_records.permissions:permission_factory")
+
+        app.config.setdefault("RECORDS_UI_LOGIN_ENDPOINT", "security.login")
 
         # Set up endpoints for viewing records.
         app.config.setdefault(

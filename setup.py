@@ -36,6 +36,8 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
+    'invenio-access>=1.0.0a2',
+    'invenio-accounts>=1.0.0a5',
     'invenio-db[mysql,postgresql]>=1.0.0a6',
     'isort>=4.2.2',
     'pep257>=0.7.0',
@@ -62,7 +64,7 @@ setup_requires = [
 
 install_requires = [
     'Flask-BabelEx>=0.9.2',
-    'invenio-records>=1.0.0a4',
+    'invenio-records>=1.0.0a5',
     'invenio-pidstore>=1.0.0a2',
 ]
 
