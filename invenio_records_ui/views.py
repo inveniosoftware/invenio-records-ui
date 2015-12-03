@@ -161,7 +161,7 @@ def record_view(pid_value=None, resolver=None, template=None,
         # operations permission object.
         if not permission_factory(record).can():
             from flask_login import current_user
-            if not current_user.is_authenticated():
+            if not current_user.is_authenticated:
                 return redirect(url_for(
                     current_app.config['RECORDS_UI_LOGIN_ENDPOINT'],
                     next=request.url))
