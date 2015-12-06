@@ -206,8 +206,8 @@ def test_permission(app):
         SECURITY_PASSWORD_SALT='CHANGEME',
         # conftest switches off permission checking, so re-enable it for this
         # app.
-        RECORDS_UI_DEFAULT_PERMISSION_FACTORY='invenio_records'
-                                              '.permissions:permission_factory'
+        RECORDS_UI_DEFAULT_PERMISSION_FACTORY='invenio_records.permissions'
+                                              ':read_permission_factory'
     )
     Menu(app)
     InvenioRecordsUI(app)
