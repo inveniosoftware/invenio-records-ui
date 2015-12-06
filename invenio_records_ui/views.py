@@ -98,15 +98,20 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     permission_factory = import_string(permission_factory_imp) if \
         permission_factory_imp else None
 
+    view_func = partial(
+        record_view,
+        resolver=Resolver(pid_type=pid_type, object_type='rec',
+                          getter=Record.get_record),
+        template=template or 'invenio_records_ui/detail.html',
+        permission_factory=permission_factory)
+    # Make view well-behaved for Flask-DebugToolbar
+    view_func.__module__ = record_view.__module__
+    view_func.__name__ = record_view.__name__
+
     return dict(
         endpoint=endpoint,
         rule=route,
-        view_func=partial(
-            record_view,
-            resolver=Resolver(pid_type=pid_type, object_type='rec',
-                              getter=Record.get_record),
-            template=template or 'invenio_records_ui/detail.html',
-            permission_factory=permission_factory),
+        view_func=view_func,
     )
 
 

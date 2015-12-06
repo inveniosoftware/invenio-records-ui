@@ -84,7 +84,7 @@ class InvenioRecordsUI(object):
 
         app.config.setdefault(
             "RECORDS_UI_DEFAULT_PERMISSION_FACTORY",
-            "invenio_records.permissions:permission_factory")
+            "invenio_records.permissions:read_permission_factory")
 
         app.config.setdefault("RECORDS_UI_LOGIN_ENDPOINT", "security.login")
 
