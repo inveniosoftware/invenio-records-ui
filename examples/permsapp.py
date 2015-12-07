@@ -55,19 +55,24 @@ record 1 again:
 
 from __future__ import absolute_import, print_function
 
-from app import app, fixtures
+from app import app, fixtures, rec1_uuid
 from flask_security.utils import encrypt_password
 from invenio_access import InvenioAccess
 from invenio_access.models import ActionUsers
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.views import blueprint
 from invenio_db import db
+from invenio_records.permissions import records_read_all
+
 
 # Install Principal and Login extensions
 app.config.update(
     ACCOUNTS_USE_CELERY=False,
     SECRET_KEY='CHANGE_ME',
     SECURITY_PASSWORD_SALT='CHANGE_ME_ALSO',
+    # conftest switches off permission checking, so re-enable it for this
+    # app.
+    RECORDS_UI_DEFAULT_PERMISSION_FACTORY='invenio_records.permissions:read_permission_factory'  # noqa
 )
 
 
@@ -91,11 +96,12 @@ def access():
         active=True,
     )
 
-    # Record 1 has UUID '9107e6ef-fea4-4971-ae2f-934d2fdcaa34'
+    # Give access to record 1 to user 'admin'
     db.session.add(ActionUsers(
-        action='record-view', argument='9107e6ef-fea4-4971-ae2f-934d2fdcaa34',
+        action=records_read_all.value, argument=rec1_uuid,
         user=admin))
+    # Exclude access to record 1 from user 'reader'
     db.session.add(ActionUsers(
-        action='record-view', argument='9107e6ef-fea4-4971-ae2f-934d2fdcaa34',
+        action=records_read_all.value, argument=rec1_uuid,
         user=reader, exclude=True))
     db.session.commit()

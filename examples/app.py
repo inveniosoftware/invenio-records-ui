@@ -50,6 +50,8 @@ View some records in your browser::
 
 from __future__ import absolute_import, print_function
 
+import os
+
 from flask import Flask
 from flask_babelex import Babel
 from flask_cli import FlaskCLI
@@ -60,13 +62,22 @@ from invenio_records import InvenioRecords
 
 from invenio_records_ui import InvenioRecordsUI
 
+
+# create application's instance directory. Needed for this example only.
+current_dir = os.path.dirname(os.path.realpath(__file__))
+instance_dir = os.path.join(current_dir, 'app')
+if not os.path.exists(instance_dir):
+    os.makedirs(instance_dir)
+
 # Create Flask application
-app = Flask(__name__)
+app = Flask(__name__, instance_path=instance_dir)
 app.config.update(dict(
     CELERY_ALWAYS_EAGER=True,
     CELERY_RESULT_BACKEND="cache",
     CELERY_CACHE_BACKEND="memory",
     CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+    # Disable access control
+    RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None
 ))
 FlaskCeleryExt(app)
 FlaskCLI(app)
@@ -75,6 +86,10 @@ InvenioDB(app)
 InvenioPIDStore(app)
 InvenioRecords(app)
 InvenioRecordsUI(app)
+
+
+rec1_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee5'
+"""First record's UUID. It will be given PID 1."""
 
 
 @app.cli.group()
@@ -91,19 +106,18 @@ def records():
 
     # Record 1 - Live record
     with db.session.begin_nested():
-        rec_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee5'
         pid1 = PersistentIdentifier.create(
-            'recid', '1', object_type='rec', object_uuid=rec_uuid,
+            'recid', '1', object_type='rec', object_uuid=rec1_uuid,
             status=PIDStatus.REGISTERED)
-        Record.create({'title': 'Registered '}, id_=rec_uuid)
+        Record.create({'title': 'Registered '}, id_=rec1_uuid)
 
         # Record 2 - Deleted PID with record
-        rec_uuid = uuid.uuid4()
+        rec2_uuid = uuid.uuid4()
         pid = PersistentIdentifier.create(
-            'recid', '2', object_type='rec', object_uuid=rec_uuid,
+            'recid', '2', object_type='rec', object_uuid=rec2_uuid,
             status=PIDStatus.REGISTERED)
         pid.delete()
-        Record.create({'title': 'Live '}, id_=rec_uuid)
+        Record.create({'title': 'Live '}, id_=rec2_uuid)
 
         # Record 3 - Deleted PID without a record
         PersistentIdentifier.create(
