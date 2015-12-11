@@ -28,3 +28,5 @@ Authors
 User interface for Invenio-Records.
 
 - Lars Holm Nielsen <lars.holm.nielsen@cern.ch>
+- Nicolas Harraudeau <nicolas.harraudeau@cern.ch>
+- Tibor Simko <tibor.simko@cern.ch>
