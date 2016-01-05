@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -54,14 +54,13 @@ import os
 
 from flask import Flask
 from flask_babelex import Babel
-from flask_cli import FlaskCLI
 from flask_celeryext import FlaskCeleryExt
+from flask_cli import FlaskCLI
 from invenio_db import InvenioDB, db
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
 from invenio_records_ui import InvenioRecordsUI
-
 
 # create application's instance directory. Needed for this example only.
 current_dir = os.path.dirname(os.path.realpath(__file__))

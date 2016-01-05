@@ -55,10 +55,10 @@ Invenio-Records-UI is dependent on Invenio-Records, Invenio-PIDStore and
 Invenio-DB so you need to initialize these extensions first:
 
 >>> from invenio_db import InvenioDB
+>>> ext_db = InvenioDB(app)
 >>> from invenio_records import InvenioRecords
 >>> from invenio_pidstore import InvenioPIDStore
 >>> from invenio_records_ui import InvenioRecordsUI
->>> ext_db = InvenioDB(app)
 >>> ext_pidstore = InvenioPIDStore(app)
 >>> ext_records = InvenioRecords(app)
 

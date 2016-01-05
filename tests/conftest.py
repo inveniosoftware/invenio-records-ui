@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -37,7 +37,8 @@ from flask_cli import FlaskCLI
 from invenio_db import InvenioDB, db
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
-from sqlalchemy_utils.functions import create_database, drop_database
+from sqlalchemy_utils.functions import create_database, database_exists, \
+    drop_database
 
 
 @pytest.fixture()
@@ -63,15 +64,11 @@ def app(request):
     InvenioRecords(app)
 
     with app.app_context():
-        if app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://':
-            create_database(db.engine.url)
         db.create_all()
 
     def finalize():
         with app.app_context():
             db.drop_all()
-            if app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://':
-                drop_database(db.engine.url)
 
     request.addfinalizer(finalize)
     return app

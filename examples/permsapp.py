@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -63,7 +63,6 @@ from invenio_accounts import InvenioAccounts
 from invenio_accounts.views import blueprint
 from invenio_db import db
 from invenio_records.permissions import records_read_all
-
 
 # Install Principal and Login extensions
 app.config.update(
