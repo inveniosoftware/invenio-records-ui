@@ -108,7 +108,14 @@ def records():
         pid1 = PersistentIdentifier.create(
             'recid', '1', object_type='rec', object_uuid=rec1_uuid,
             status=PIDStatus.REGISTERED)
-        Record.create({'title': 'Registered '}, id_=rec1_uuid)
+        Record.create({
+            'title': 'Registered ',
+            'authors': [
+                {'name': 'Ellis Jonathan'},
+                {'name': 'Higgs Peter'},
+            ],
+            'keywords': ['CERN', 'higgs'],
+        }, id_=rec1_uuid)
 
         # Record 2 - Deleted PID with record
         rec2_uuid = uuid.uuid4()
