@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -196,6 +196,39 @@ def test_changed_views(app):
 
         res = client.get("/doi/10.1234/foo")
         assert res.status_code == 200
+
+
+def custom_view(pid, record, template=None):
+    """Custom view function for testing."""
+    return "TEST:{0}".format(pid.pid_value)
+
+
+def test_custom_view_method(app):
+    """Test view."""
+    app.config.update(dict(
+        PIDSTORE_DATACITE_DOI_PREFIX="10.4321",
+        RECORDS_UI_ENDPOINTS=dict(
+            recid=dict(
+                pid_type='recid',
+                route='/records/<pid_value>',
+            ),
+            recid_custom=dict(
+                pid_type='recid',
+                route='/records/<pid_value>/custom',
+                view_imp='test_invenio_records_ui:custom_view',
+            ),
+        )
+    ))
+    InvenioRecordsUI(app)
+    setup_record_fixture(app)
+
+    with app.test_client() as client:
+        res = client.get("/records/1")
+        assert res.status_code == 200
+
+        res = client.get("/records/1/custom")
+        assert res.status_code == 200
+        assert res.get_data(as_text=True) == 'TEST:1'
 
 
 def test_permission(app):

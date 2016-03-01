@@ -37,6 +37,7 @@ cache:
 
 services:
   - postgresql
+  - redis
 
 env:
   - REQUIREMENTS=lowest SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio"

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -76,7 +76,7 @@ def create_blueprint(endpoints):
 
 
 def create_url_rule(endpoint, route=None, pid_type=None, template=None,
-                    permission_factory_imp=None):
+                    permission_factory_imp=None, view_imp=None):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -87,8 +87,9 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     :param pid_type: Persistent identifier type for endpoint. Required.
     :param template: Template to render. Defaults to
         ``invenio_records_ui/detail.html``.
-    :param permission_factory: Import path to factory that creates a permission
-        object for a given record.
+    :param permission_factory_imp: Import path to factory that creates a
+        permission object for a given record.
+    :param view_imp: Import path to view function. Default: None.
     :returns: a dictionary that can be passed as keywords arguments to
         ``Blueprint.add_url_rule``.
     """
@@ -97,13 +98,15 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
 
     permission_factory = import_string(permission_factory_imp) if \
         permission_factory_imp else None
+    view_method = import_string(view_imp) if view_imp else default_view_method
 
     view_func = partial(
         record_view,
         resolver=Resolver(pid_type=pid_type, object_type='rec',
                           getter=Record.get_record),
         template=template or 'invenio_records_ui/detail.html',
-        permission_factory=permission_factory)
+        permission_factory=permission_factory,
+        view_method=view_method)
     # Make view well-behaved for Flask-DebugToolbar
     view_func.__module__ = record_view.__module__
     view_func.__name__ = record_view.__name__
@@ -116,7 +119,7 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
 
 
 def record_view(pid_value=None, resolver=None, template=None,
-                permission_factory=None, **kwargs):
+                permission_factory=None, view_method=None, **kwargs):
     """Generic view for displaying a record.
 
     The two parameters ``resolver`` and ``template`` should not be included
@@ -162,8 +165,8 @@ def record_view(pid_value=None, resolver=None, template=None,
     # Check permissions
     permission_factory = permission_factory or current_permission_factory
     if permission_factory:
-        # Note, cannot be done in one line due overloading of boolean
-        # operations permission object.
+        # Note, cannot be done in one line due to overloading of boolean
+        # operations in permission object.
         if not permission_factory(record).can():
             from flask_login import current_user
             if not current_user.is_authenticated:
@@ -172,6 +175,14 @@ def record_view(pid_value=None, resolver=None, template=None,
                     next=request.url))
             abort(403)
 
+    return view_method(pid, record, template=template)
+
+
+def default_view_method(pid, record, template=None):
+    """Default view method.
+
+    Sends record_viewed signal and renders template.
+    """
     record_viewed.send(
         current_app._get_current_object(),
         pid=pid,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -280,6 +280,31 @@ endpoint by passing the ``permission_factory_imp`` argument:
 ...         template='invenio_records_ui/detail.html',
 ...         permission_factory_imp=
 ...         'invenio_records.permissions:permission_factory'
+...     ),
+... )
+
+
+Custom view functions
+---------------------
+Invenio-Records-UI also has support for custom view functions, in case you need
+more customization than what is possible with templates.
+
+The custom view function must take a persistent identifier and a record as
+arguments as well as keyword arguments. The view function is called at the very
+end after the persistent identifier have been resolved to a record and any
+access control have been checked as well.
+
+>>> def custom_view(pid, record, template=None, **kwargs):
+...     return "CUSTOM:{0}".format(pid.pid_value)
+
+You configure the endpoint to use your custom view by passing the ``view_imp``
+argument to your endpoints configuration:
+
+>>> app.config["RECORDS_UI_ENDPOINTS"] = dict(
+...     recid=dict(
+...         pid_type='recid',
+...         route='/records/<pid_value>',
+...         view_imp='mymodule.custom_view'
 ...     ),
 ... )
 """
