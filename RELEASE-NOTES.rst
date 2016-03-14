@@ -1,8 +1,8 @@
 =============================
- Invenio-Records-UI v1.0.0a4
+ Invenio-Records-UI v1.0.0a5
 =============================
 
-Invenio-Records-UI v1.0.0a4 was released on December 11, 2015.
+Invenio-Records-UI v1.0.0a5 was released on March 14, 2016.
 
 About
 -----
@@ -19,7 +19,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-records-ui==1.0.0a4
+   $ pip install invenio-records-ui==1.0.0a5
 
 Documentation
 -------------
