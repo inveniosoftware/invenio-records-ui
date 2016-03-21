@@ -198,15 +198,15 @@ def test_changed_views(app):
         assert res.status_code == 200
 
 
-def custom_view(pid, record, template=None):
+def custom_view(pid, record, template=None, filename=None):
     """Custom view function for testing."""
-    return "TEST:{0}".format(pid.pid_value)
+    return 'TEST:{0}:{1}'.format(pid.pid_value, filename)
 
 
 def test_custom_view_method(app):
     """Test view."""
     app.config.update(dict(
-        PIDSTORE_DATACITE_DOI_PREFIX="10.4321",
+        PIDSTORE_DATACITE_DOI_PREFIX='10.4321',
         RECORDS_UI_ENDPOINTS=dict(
             recid=dict(
                 pid_type='recid',
@@ -214,7 +214,7 @@ def test_custom_view_method(app):
             ),
             recid_custom=dict(
                 pid_type='recid',
-                route='/records/<pid_value>/custom',
+                route='/records/<pid_value>/custom/<filename>',
                 view_imp='test_invenio_records_ui:custom_view',
             ),
         )
@@ -223,12 +223,12 @@ def test_custom_view_method(app):
     setup_record_fixture(app)
 
     with app.test_client() as client:
-        res = client.get("/records/1")
+        res = client.get('/records/1')
         assert res.status_code == 200
 
-        res = client.get("/records/1/custom")
+        res = client.get('/records/1/custom/afilename')
         assert res.status_code == 200
-        assert res.get_data(as_text=True) == 'TEST:1'
+        assert res.get_data(as_text=True) == 'TEST:1:afilename'
 
 
 def test_permission(app):
