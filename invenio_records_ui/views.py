@@ -175,7 +175,7 @@ def record_view(pid_value=None, resolver=None, template=None,
                     next=request.url))
             abort(403)
 
-    return view_method(pid, record, template=template, **kwargs)
+    return view_method(pid, record, template=template)
 
 
 def default_view_method(pid, record, template=None):

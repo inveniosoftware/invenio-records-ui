@@ -198,9 +198,9 @@ def test_changed_views(app):
         assert res.status_code == 200
 
 
-def custom_view(pid, record, template=None, filename=None):
+def custom_view(pid, record, template=None):
     """Custom view function for testing."""
-    return 'TEST:{0}:{1}'.format(pid.pid_value, filename)
+    return 'TEST:{0}:{1}'.format(pid.pid_value, request.view_args['filename'])
 
 
 def test_custom_view_method(app):
@@ -211,6 +211,10 @@ def test_custom_view_method(app):
             recid=dict(
                 pid_type='recid',
                 route='/records/<pid_value>',
+            ),
+            record_with_param=dict(
+                pid_type='recid',
+                route='/records/<pid_value>/export/<format>',
             ),
             recid_custom=dict(
                 pid_type='recid',
@@ -226,9 +230,14 @@ def test_custom_view_method(app):
         res = client.get('/records/1')
         assert res.status_code == 200
 
+        # Test that filename parameter is passed to custom view function
         res = client.get('/records/1/custom/afilename')
         assert res.status_code == 200
         assert res.get_data(as_text=True) == 'TEST:1:afilename'
+
+        # Test that default view function can deal with multiple parameters.
+        res = client.get('/records/1/export/bibtex')
+        assert res.status_code == 200
 
 
 def test_permission(app):
