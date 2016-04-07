@@ -150,7 +150,7 @@ def record_view(pid_value=None, resolver=None, template=None,
     except PIDRedirectedError as e:
         try:
             return redirect(url_for(
-                'invenio_records_ui.{0}'.format(e.destination_pid.pid_type),
+                '.{0}'.format(e.destination_pid.pid_type),
                 pid_value=e.destination_pid.pid_value))
         except BuildError:
             current_app.logger.exception(
