@@ -76,7 +76,8 @@ def create_blueprint(endpoints):
 
 
 def create_url_rule(endpoint, route=None, pid_type=None, template=None,
-                    permission_factory_imp=None, view_imp=None):
+                    permission_factory_imp=None, view_imp=None,
+                    record_class=None):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -99,11 +100,12 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     permission_factory = import_string(permission_factory_imp) if \
         permission_factory_imp else None
     view_method = import_string(view_imp) if view_imp else default_view_method
+    record_class = import_string(record_class) if record_class else Record
 
     view_func = partial(
         record_view,
         resolver=Resolver(pid_type=pid_type, object_type='rec',
-                          getter=Record.get_record),
+                          getter=record_class.get_record),
         template=template or 'invenio_records_ui/detail.html',
         permission_factory=permission_factory,
         view_method=view_method)
