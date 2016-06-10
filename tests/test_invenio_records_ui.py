@@ -203,6 +203,11 @@ def custom_view(pid, record, template=None):
     return 'TEST:{0}:{1}'.format(pid.pid_value, request.view_args['filename'])
 
 
+def custom_get_and_post(pid, record, template=None):
+    """Custom view function for testing GET/POST."""
+    return 'TEST:{0}:{1}'.format(pid.pid_value, request.method)
+
+
 def test_custom_view_method(app):
     """Test view."""
     app.config.update(dict(
@@ -221,6 +226,12 @@ def test_custom_view_method(app):
                 route='/records/<pid_value>/custom/<filename>',
                 view_imp='test_invenio_records_ui:custom_view',
             ),
+            recid_get_post=dict(
+                pid_type='recid',
+                route='/records/<pid_value>/custom_get_and_post',
+                view_imp='test_invenio_records_ui:custom_get_and_post',
+                methods=['GET', 'POST'],
+            ),
         )
     ))
     InvenioRecordsUI(app)
@@ -238,6 +249,14 @@ def test_custom_view_method(app):
         # Test that default view function can deal with multiple parameters.
         res = client.get('/records/1/export/bibtex')
         assert res.status_code == 200
+
+        # Test GET/POST
+        res = client.get('/records/1/custom_get_and_post')
+        assert res.status_code == 200
+        assert res.get_data(as_text=True) == 'TEST:1:GET'
+        res = client.post('/records/1/custom_get_and_post')
+        assert res.status_code == 200
+        assert res.get_data(as_text=True) == 'TEST:1:POST'
 
 
 def test_permission(app):

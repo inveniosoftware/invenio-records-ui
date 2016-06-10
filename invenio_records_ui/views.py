@@ -77,7 +77,7 @@ def create_blueprint(endpoints):
 
 def create_url_rule(endpoint, route=None, pid_type=None, template=None,
                     permission_factory_imp=None, view_imp=None,
-                    record_class=None):
+                    record_class=None, methods=None):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -101,6 +101,7 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
         permission_factory_imp else None
     view_method = import_string(view_imp) if view_imp else default_view_method
     record_class = import_string(record_class) if record_class else Record
+    methods = methods or ['GET']
 
     view_func = partial(
         record_view,
@@ -117,6 +118,7 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
         endpoint=endpoint,
         rule=route,
         view_func=view_func,
+        methods=methods,
     )
 
 
