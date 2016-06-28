@@ -280,12 +280,12 @@ def test_permission(app):
     # Create admin
     with app.app_context():
         admin = accounts.datastore.create_user(
-            email='admin@invenio-software.org',
+            email='admin@inveniosoftware.org',
             password=encrypt_password('123456'),
             active=True,
         )
         reader = accounts.datastore.create_user(
-            email='reader@invenio-software.org',
+            email='reader@inveniosoftware.org',
             password=encrypt_password('123456'),
             active=True,
         )
@@ -313,7 +313,7 @@ def test_permission(app):
         res = client.get(record_url)
         assert res.status_code == 302
         res = client.post(login_url, data={
-            'email': 'admin@invenio-software.org', 'password': '123456'})
+            'email': 'admin@inveniosoftware.org', 'password': '123456'})
         assert res.status_code == 302
         res = client.get(record_url)
         res.status_code == 200
@@ -321,7 +321,7 @@ def test_permission(app):
     # Access record 1 as reader
     with app.test_client() as client:
         res = client.post(login_url, data={
-            'email': 'reader@invenio-software.org', 'password': '123456'})
+            'email': 'reader@inveniosoftware.org', 'password': '123456'})
         assert res.status_code == 302
         res = client.get(record_url)
         res.status_code == 403

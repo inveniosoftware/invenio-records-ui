@@ -40,12 +40,12 @@ Try to view record 1::
 
    http://localhost:5000/records/1
 
-Login as admin@invenio-software.org (password 123456) and view record 1 again:
+Login as admin@inveniosoftware.org (password 123456) and view record 1 again:
 
    http://localhost:5000/login
    http://localhost:5000/records/1
 
-Logout and login as reader@invenio-software.org (password 123456) and view
+Logout and login as reader@inveniosoftware.org (password 123456) and view
 record 1 again:
 
    http://localhost:5000/logout
@@ -85,12 +85,12 @@ InvenioAccess(app)
 def access():
     """Load access fixtures."""
     admin = accounts.datastore.create_user(
-        email='admin@invenio-software.org',
+        email='admin@inveniosoftware.org',
         password=encrypt_password('123456'),
         active=True,
     )
     reader = accounts.datastore.create_user(
-        email='reader@invenio-software.org',
+        email='reader@inveniosoftware.org',
         password=encrypt_password('123456'),
         active=True,
     )
