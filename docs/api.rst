@@ -29,20 +29,16 @@ Flask extension
 ---------------
 
 .. automodule:: invenio_records_ui.ext
-   :members:
-   :undoc-members:
+   :members: InvenioRecordsUI, _RecordUIState
 
 Views
 -----
 
 .. automodule:: invenio_records_ui.views
    :members:
-   :undoc-members:
 
 Signals
 -------
 
 .. automodule:: invenio_records_ui.signals
    :members:
-   :undoc-members:
-
