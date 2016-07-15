@@ -30,10 +30,11 @@ Run example development server:
 .. code-block:: console
 
    $ cd examples
-   $ flask -a app.py db init
-   $ flask -a app.py db create
-   $ flask -a app.py fixtures records
-   $ flask -a app.py --debug run
+   $ export FLASK_APP=app.py
+   $ flask db init
+   $ flask db create
+   $ flask fixtures records
+   $ flask run --debugger
 
 View some records in your browser::
 
@@ -44,8 +45,6 @@ View some records in your browser::
    http://localhost:5000/records/5
    http://localhost:5000/records/6
    http://localhost:5000/records/7
-   http://localhost:5000/records/8
-   http://localhost:5000/records/9
 """
 
 from __future__ import absolute_import, print_function
@@ -72,8 +71,8 @@ if not os.path.exists(instance_dir):
 app = Flask(__name__, instance_path=instance_dir)
 app.config.update(dict(
     CELERY_ALWAYS_EAGER=True,
-    CELERY_RESULT_BACKEND="cache",
-    CELERY_CACHE_BACKEND="memory",
+    CELERY_RESULT_BACKEND='cache',
+    CELERY_CACHE_BACKEND='memory',
     CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
     # Disable access control
     RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None
@@ -148,3 +147,5 @@ def records():
         # Record 7 - Unregistered PID
         PersistentIdentifier.create(
             'recid', '7', status=PIDStatus.RESERVED)
+
+    db.session.commit()

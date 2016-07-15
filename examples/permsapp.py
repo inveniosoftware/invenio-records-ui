@@ -30,11 +30,12 @@ Run example development server:
 .. code-block:: console
 
    $ cd examples
-   $ flask -a permsapp.py db init
-   $ flask -a permsapp.py db create
-   $ flask -a permsapp.py fixtures records
-   $ flask -a permsapp.py fixtures access
-   $ flask -a permsapp.py --debug run
+   $ export FLASK_APP=permsapp.py
+   $ flask db init
+   $ flask db create
+   $ flask fixtures records
+   $ flask fixtures access
+   $ flask run --debugger
 
 Try to view record 1::
 
@@ -56,6 +57,7 @@ record 1 again:
 from __future__ import absolute_import, print_function
 
 from app import app, fixtures, rec1_uuid
+from flask_menu import Menu
 from flask_security.utils import encrypt_password
 from invenio_access import InvenioAccess
 from invenio_access.models import ActionUsers
@@ -78,6 +80,7 @@ app.config.update(
 accounts = InvenioAccounts(app)
 app.register_blueprint(blueprint)
 
+Menu(app)
 InvenioAccess(app)
 
 
