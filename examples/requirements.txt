@@ -1,0 +1,6 @@
+Flask-CLI>=0.4.0
+Flask-Menu>=0.5.0
+Flask-Security>=1.7.5
+invenio-access>=1.0.0a8
+invenio-db>=1.0.0a10
+invenio-records-ui>=1.0.0a7

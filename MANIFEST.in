@@ -49,5 +49,6 @@ recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
 recursive-include examples *.py
+recursive-include examples *.txt
 recursive-include invenio_records_ui *.html
 recursive-include tests *.py
