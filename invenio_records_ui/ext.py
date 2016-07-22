@@ -28,6 +28,7 @@ from __future__ import absolute_import, print_function
 
 from werkzeug.utils import import_string
 
+from . import config
 from .views import create_blueprint
 
 
@@ -35,7 +36,10 @@ class _RecordUIState(object):
     """Record UI state."""
 
     def __init__(self, app):
-        """Initialize state."""
+        """Initialize state.
+
+        :param app: The Flask application.
+        """
         self.app = app
         self._permission_factory = None
 
@@ -56,12 +60,18 @@ class InvenioRecordsUI(object):
     """
 
     def __init__(self, app=None):
-        """Extension initialization."""
+        """Extension initialization.
+
+        :param app: The Flask application. (Default: ``None``)
+        """
         if app:
             self.init_app(app)
 
     def init_app(self, app):
-        """Flask application initialization."""
+        """Flask application initialization.
+
+        :param app: The Flask application.
+        """
         self.init_config(app)
 
         # Register records blueprints
@@ -71,31 +81,10 @@ class InvenioRecordsUI(object):
         app.extensions['invenio-records-ui'] = _RecordUIState(app)
 
     def init_config(self, app):
-        """Initialize configuration on application."""
-        app.config.setdefault(
-            "RECORDS_UI_BASE_TEMPLATE",
-            app.config.get("BASE_TEMPLATE",
-                           "invenio_records_ui/base.html"))
+        """Initialize configuration on application.
 
-        # Tombstones
-        app.config.setdefault(
-            "RECORDS_UI_TOMBSTONE_TEMPLATE",
-            "invenio_records_ui/tombstone.html")
-
-        app.config.setdefault(
-            "RECORDS_UI_DEFAULT_PERMISSION_FACTORY",
-            "invenio_records.permissions:read_permission_factory")
-
-        app.config.setdefault("RECORDS_UI_LOGIN_ENDPOINT", "security.login")
-
-        # Set up endpoints for viewing records.
-        app.config.setdefault(
-            "RECORDS_UI_ENDPOINTS",
-            dict(
-                recid=dict(
-                    pid_type='recid',
-                    route='/records/<pid_value>',
-                    template='invenio_records_ui/detail.html',
-                ),
-            )
-        )
+        :param app: The Flask application.
+        """
+        for k in dir(config):
+            if k.startswith('RECORDS_UI_'):
+                app.config.setdefault(k, getattr(config, k))

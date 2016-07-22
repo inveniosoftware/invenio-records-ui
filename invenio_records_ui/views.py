@@ -52,6 +52,7 @@ def create_blueprint(endpoints):
 
     :param endpoints: Dictionary of endpoints to be installed. See usage
         documentation for further details.
+    :returns: The initialized blueprint.
     """
     blueprint = Blueprint(
         'invenio_records_ui',
@@ -86,12 +87,14 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     :param endpoint: Name of endpoint.
     :param route: URL route (must include ``<pid_value>`` pattern). Required.
     :param pid_type: Persistent identifier type for endpoint. Required.
-    :param template: Template to render. Defaults to
-        ``invenio_records_ui/detail.html``.
+    :param template: Template to render.
+        (Default: ``invenio_records_ui/detail.html``)
     :param permission_factory_imp: Import path to factory that creates a
         permission object for a given record.
-    :param view_imp: Import path to view function. Default: None.
-    :returns: a dictionary that can be passed as keywords arguments to
+    :param view_imp: Import path to view function. (Default: ``None``)
+    :param record_class: Name of the record API class.
+    :param methods: Method allowed for the endpoint.
+    :returns: A dictionary that can be passed as keywords arguments to
         ``Blueprint.add_url_rule``.
     """
     assert route
@@ -136,11 +139,23 @@ def record_view(pid_value=None, resolver=None, template=None,
     - ``pid``
     - ``record``.
 
+    Procedure followed:
+
+    #. PID and record are resolved.
+
+    #. Permission are checked.
+
+    #. ``view_method`` is called.
+
     :param pid_value: Persistent identifier value.
     :param resolver: An instance of a persistent identifier resolver. A
         persistent identifier resolver takes care of resolving persistent
         identifiers into internal objects.
     :param template: Template to render.
+    :param permission_factory: Permission factory called to check if user has
+        enough power to execute the action.
+    :param view_method: Function that is called.
+    :returns: Tuple (pid object, record object).
     """
     try:
         pid, record = resolver.resolve(pid_value)
@@ -186,6 +201,11 @@ def default_view_method(pid, record, template=None):
     """Default view method.
 
     Sends record_viewed signal and renders template.
+
+    :param pid: PID object.
+    :param record: Record object.
+    :param template: Template to render.
+    :returns: The rendered template.
     """
     record_viewed.send(
         current_app._get_current_object(),
