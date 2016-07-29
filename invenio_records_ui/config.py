@@ -27,9 +27,6 @@
 from __future__ import absolute_import, print_function
 
 
-RECORDS_UI_BASE_TEMPLATE = "invenio_records_ui/base.html"
-"""Configure the basic record template."""
-
 RECORDS_UI_TOMBSTONE_TEMPLATE = "invenio_records_ui/tombstone.html"
 """Configure the tombstone template."""
 

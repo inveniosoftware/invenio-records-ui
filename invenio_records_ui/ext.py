@@ -47,7 +47,7 @@ class _RecordUIState(object):
     def permission_factory(self):
         """Load default permission factory."""
         if self._permission_factory is None:
-            imp = self.app.config["RECORDS_UI_DEFAULT_PERMISSION_FACTORY"]
+            imp = self.app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY']
             self._permission_factory = import_string(imp) if imp else None
         return self._permission_factory
 
@@ -76,7 +76,7 @@ class InvenioRecordsUI(object):
 
         # Register records blueprints
         app.register_blueprint(
-            create_blueprint(app.config["RECORDS_UI_ENDPOINTS"]))
+            create_blueprint(app.config['RECORDS_UI_ENDPOINTS']))
 
         app.extensions['invenio-records-ui'] = _RecordUIState(app)
 
@@ -85,6 +85,11 @@ class InvenioRecordsUI(object):
 
         :param app: The Flask application.
         """
+        app.config.setdefault(
+            'RECORDS_UI_BASE_TEMPLATE',
+            app.config.get('BASE_TEMPLATE', 'invenio_records_ui/base.html')
+        )
+
         for k in dir(config):
             if k.startswith('RECORDS_UI_'):
                 app.config.setdefault(k, getattr(config, k))
