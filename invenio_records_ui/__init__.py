@@ -267,8 +267,7 @@ The permission factory you can apply globally to all endpoints by
 setting ``RECORDS_UI_DEFAULT_PERMISSION_FACTORY`` to the import path of the
 permission factory:
 
->>> app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY'] = \
-...     'invenio_records.permissions:permission_factory'
+>>> app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY'] = perm_factory
 
 Alternatively you can also apply a permission factory to only a specific
 endpoint by passing the ``permission_factory_imp`` argument:
@@ -278,8 +277,7 @@ endpoint by passing the ``permission_factory_imp`` argument:
 ...         pid_type='recid',
 ...         route='/records/<pid_value>',
 ...         template='invenio_records_ui/detail.html',
-...         permission_factory_imp=
-...         'invenio_records.permissions:permission_factory'
+...         permission_factory_imp=perm_factory,
 ...     ),
 ... )
 

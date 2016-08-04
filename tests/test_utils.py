@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -23,33 +23,19 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 
-# TODO: Generate this manifest file by running the following commands:
-#
-#  git init
-#  git add -A
-#  pip install -e .[all]
-#  check-manifest -u
+"""Module tests."""
 
-# Check manifest will not automatically add these two files:
-include .dockerignore
-include .editorconfig
-include .tx/config
-recursive-include invenio_records_ui *.po
-recursive-include invenio_records_ui *.mo
+from __future__ import absolute_import, print_function
 
-# added by check_manifest.py
-include *.rst
-include *.sh
-include *.txt
-include LICENSE
-include babel.ini
-include pytest.ini
-recursive-include docs *.bat
-recursive-include docs *.py
-recursive-include docs *.rst
-recursive-include docs Makefile
-recursive-include examples *.py
-recursive-include examples *.txt
-recursive-include examples *.sh
-recursive-include invenio_records_ui *.html
-recursive-include tests *.py
+from invenio_records_ui.utils import obj_or_import_string
+
+
+def myfunc():
+    """Example function."""
+    pass
+
+
+def test_obj_or_import_string(app):
+    """Test obj_or_import_string."""
+    assert not obj_or_import_string(value=None)
+    assert myfunc == obj_or_import_string(value=myfunc)

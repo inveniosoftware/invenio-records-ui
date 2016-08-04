@@ -29,13 +29,9 @@ Run example development server:
 
 .. code-block:: console
 
+   $ pip install -e .[all]
    $ cd examples
-   $ pip install -r requirements.txt
-   $ export FLASK_APP=app.py
-   $ flask db init
-   $ flask db create
-   $ flask fixtures records
-   $ flask run --debugger
+   $ ./app-recreate.sh
 
 View some records in your browser::
 
@@ -46,6 +42,7 @@ View some records in your browser::
    http://localhost:5000/records/5
    http://localhost:5000/records/6
    http://localhost:5000/records/7
+   http://localhost:5000/records/8
 """
 
 from __future__ import absolute_import, print_function
@@ -75,9 +72,12 @@ app.config.update(dict(
     CELERY_RESULT_BACKEND='cache',
     CELERY_CACHE_BACKEND='memory',
     CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+    SQLALCHEMY_DATABASE_URI=os.environ.get('SQLALCHEMY_DATABASE_URI',
+                                           'sqlite:///app.db'),
     # Disable access control
     RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None
 ))
+
 FlaskCeleryExt(app)
 FlaskCLI(app)
 Babel(app)
@@ -89,6 +89,9 @@ InvenioRecordsUI(app)
 
 rec1_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee5'
 """First record's UUID. It will be given PID 1."""
+
+rec2_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee6'
+"""First record's UUID. It will be given PID 2."""
 
 
 @app.cli.group()
@@ -114,39 +117,53 @@ def records():
                 {'name': 'Ellis Jonathan'},
                 {'name': 'Higgs Peter'},
             ],
+            'access': 'open',
             'keywords': ['CERN', 'higgs'],
         }, id_=rec1_uuid)
 
-        # Record 2 - Deleted PID with record
-        rec2_uuid = uuid.uuid4()
-        pid = PersistentIdentifier.create(
+        PersistentIdentifier.create(
             'recid', '2', object_type='rec', object_uuid=rec2_uuid,
             status=PIDStatus.REGISTERED)
-        pid.delete()
-        Record.create({'title': 'Live '}, id_=rec2_uuid)
+        Record.create({
+            'title': 'Registered ',
+            'authors': [
+                {'name': 'Ellis Jonathan'},
+                {'name': 'Higgs Peter'},
+            ],
+            'access': 'closed',
+            'keywords': ['CERN', 'higgs'],
+        }, id_=rec2_uuid)
 
-        # Record 3 - Deleted PID without a record
-        PersistentIdentifier.create(
-            'recid', '3', status=PIDStatus.DELETED)
-
-        # Record 4 - Registered PID without a record
-        PersistentIdentifier.create(
-            'recid', '4', status=PIDStatus.REGISTERED)
-
-        # Record 5 - Redirected PID
+        # Record 3 - Deleted PID with record
+        rec3_uuid = uuid.uuid4()
         pid = PersistentIdentifier.create(
+            'recid', '3', object_type='rec', object_uuid=rec3_uuid,
+            status=PIDStatus.REGISTERED)
+        pid.delete()
+        Record.create({'title': 'Live '}, id_=rec3_uuid)
+
+        # Record 4 - Deleted PID without a record
+        PersistentIdentifier.create(
+            'recid', '4', status=PIDStatus.DELETED)
+
+        # Record 5 - Registered PID without a record
+        PersistentIdentifier.create(
             'recid', '5', status=PIDStatus.REGISTERED)
+
+        # Record 6 - Redirected PID
+        pid = PersistentIdentifier.create(
+            'recid', '6', status=PIDStatus.REGISTERED)
         pid.redirect(pid1)
 
-        # Record 6 - Redirected non existing endpoint
+        # Record 7 - Redirected non existing endpoint
         doi = PersistentIdentifier.create(
             'doi', '10.1234/foo', status=PIDStatus.REGISTERED)
         pid = PersistentIdentifier.create(
-            'recid', '6', status=PIDStatus.REGISTERED)
+            'recid', '7', status=PIDStatus.REGISTERED)
         pid.redirect(doi)
 
-        # Record 7 - Unregistered PID
+        # Record 8 - Unregistered PID
         PersistentIdentifier.create(
-            'recid', '7', status=PIDStatus.RESERVED)
+            'recid', '8', status=PIDStatus.RESERVED)
 
     db.session.commit()

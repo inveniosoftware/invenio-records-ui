@@ -26,12 +26,10 @@
 
 from __future__ import absolute_import, print_function
 
-
 RECORDS_UI_TOMBSTONE_TEMPLATE = "invenio_records_ui/tombstone.html"
 """Configure the tombstone template."""
 
-RECORDS_UI_DEFAULT_PERMISSION_FACTORY = ("invenio_records.permissions:"
-                                         "read_permission_factory")
+RECORDS_UI_DEFAULT_PERMISSION_FACTORY = None
 """Configure the default permission factory."""
 
 RECORDS_UI_LOGIN_ENDPOINT = "security.login"
@@ -59,13 +57,19 @@ The structure of the dictionary is as follows:
         return render_template(template, pid=pid, record=record)
 
 
+    def my_permission_factory(record, *args, **kwargs):
+        def can(self):
+            rec = Record.get_record(record.id)
+            return rec.get('access', '') == 'open'
+        return type('MyPermissionChecker', (), {'can': can})()
+
+
     RECORDS_UI_ENDPOINTS = {
         "<endpoint-name>": {
             "pid_type": "<record-pid-type>",
             "route": "/records/<pid_value>",
             "template": "invenio_records_ui/detail.html",
-            "permission_factory_imp": ("invenio_records.permissions:"
-                                       "read_permission_factory")
+            "permission_factory_imp": "my_permission_factory",
             "view_imp": my_view,
             "record_class": "invenio_records.api:Record",
             "methods": ["GET", "POST", "PUT", "DELETE"],
@@ -81,7 +85,8 @@ The structure of the dictionary is as follows:
     (Default: ``invenio_records_ui/detail.html``)
 
 :param permission_factory_imp: Import path to factory that creates a
-        permission object for a given record.
+        permission object for a given record. If the value is ``None``, then
+        no access control is done. (Default: ``None``)
 
 :param view_imp: Import path to view function. (Default: ``None``)
 

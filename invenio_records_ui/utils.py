@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,34 +22,21 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+"""Utility."""
 
-# TODO: Generate this manifest file by running the following commands:
-#
-#  git init
-#  git add -A
-#  pip install -e .[all]
-#  check-manifest -u
+import six
+from werkzeug.utils import import_string
 
-# Check manifest will not automatically add these two files:
-include .dockerignore
-include .editorconfig
-include .tx/config
-recursive-include invenio_records_ui *.po
-recursive-include invenio_records_ui *.mo
 
-# added by check_manifest.py
-include *.rst
-include *.sh
-include *.txt
-include LICENSE
-include babel.ini
-include pytest.ini
-recursive-include docs *.bat
-recursive-include docs *.py
-recursive-include docs *.rst
-recursive-include docs Makefile
-recursive-include examples *.py
-recursive-include examples *.txt
-recursive-include examples *.sh
-recursive-include invenio_records_ui *.html
-recursive-include tests *.py
+def obj_or_import_string(value, default=None):
+    """Import string or return object.
+
+    :params value: Import path or class object to instantiate.
+    :params default: Default object to return if the import fails.
+    :returns: The imported object.
+    """
+    if isinstance(value, six.string_types):
+        return import_string(value)
+    elif value:
+        return value
+    return default

@@ -31,6 +31,7 @@ import uuid
 
 from flask import Flask, request, url_for
 from flask_menu import Menu
+from flask_principal import ActionNeed
 from flask_security.utils import encrypt_password
 from invenio_access import InvenioAccess
 from invenio_access.models import ActionUsers
@@ -40,7 +41,6 @@ from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
-from invenio_records.permissions import records_read_all
 
 from invenio_records_ui import InvenioRecordsUI
 from invenio_records_ui.signals import record_viewed
@@ -297,11 +297,10 @@ def test_permission(app):
 
         # Setup permissions for record 1 (grant 'admin', deny 'reader')
         db.session.add(ActionUsers(
-            action=records_read_all.value, argument=str(record.id),
-            user=admin))
+            action=ActionNeed('records-read').value, user=admin))
         db.session.add(ActionUsers(
-            action=records_read_all.value, argument=str(record.id),
-            user=reader, exclude=True))
+            action=ActionNeed('records-read').value, user=reader,
+            exclude=True))
         db.session.commit()
 
     with app.test_request_context():

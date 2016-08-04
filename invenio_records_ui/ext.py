@@ -26,9 +26,8 @@
 
 from __future__ import absolute_import, print_function
 
-from werkzeug.utils import import_string
-
 from . import config
+from .utils import obj_or_import_string
 from .views import create_blueprint
 
 
@@ -48,7 +47,7 @@ class _RecordUIState(object):
         """Load default permission factory."""
         if self._permission_factory is None:
             imp = self.app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY']
-            self._permission_factory = import_string(imp) if imp else None
+            self._permission_factory = obj_or_import_string(imp)
         return self._permission_factory
 
 
