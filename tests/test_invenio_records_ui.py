@@ -31,10 +31,8 @@ import uuid
 
 from flask import Flask, request, url_for
 from flask_menu import Menu
-from flask_principal import ActionNeed
 from flask_security.utils import encrypt_password
 from invenio_access import InvenioAccess
-from invenio_access.models import ActionUsers
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.views import blueprint as accounts_blueprint
 from invenio_db import db
@@ -267,8 +265,8 @@ def test_permission(app):
         SECURITY_PASSWORD_SALT='CHANGEME',
         # conftest switches off permission checking, so re-enable it for this
         # app.
-        RECORDS_UI_DEFAULT_PERMISSION_FACTORY='invenio_records.permissions'
-                                              ':read_permission_factory'
+        RECORDS_UI_DEFAULT_PERMISSION_FACTORY='helpers:'
+                                              'only_authenticated_users',
     )
     Menu(app)
     InvenioRecordsUI(app)
@@ -279,13 +277,8 @@ def test_permission(app):
 
     # Create admin
     with app.app_context():
-        admin = accounts.datastore.create_user(
+        accounts.datastore.create_user(
             email='admin@inveniosoftware.org',
-            password=encrypt_password('123456'),
-            active=True,
-        )
-        reader = accounts.datastore.create_user(
-            email='reader@inveniosoftware.org',
             password=encrypt_password('123456'),
             active=True,
         )
@@ -295,12 +288,6 @@ def test_permission(app):
                      getter=Record.get_record)
         dummy_pid, record = r.resolve('1')
 
-        # Setup permissions for record 1 (grant 'admin', deny 'reader')
-        db.session.add(ActionUsers(
-            action=ActionNeed('records-read').value, user=admin))
-        db.session.add(ActionUsers(
-            action=ActionNeed('records-read').value, user=reader,
-            exclude=True))
         db.session.commit()
 
     with app.test_request_context():
@@ -317,10 +304,7 @@ def test_permission(app):
         res = client.get(record_url)
         res.status_code == 200
 
-    # Access record 1 as reader
+    # Access record 1 as anonymous
     with app.test_client() as client:
-        res = client.post(login_url, data={
-            'email': 'reader@inveniosoftware.org', 'password': '123456'})
-        assert res.status_code == 302
         res = client.get(record_url)
         res.status_code == 403
