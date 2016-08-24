@@ -137,8 +137,8 @@ html_theme_options = {
     'github_banner': True,
     'show_powered_by': False,
     'extra_nav_links': {
-        'invenio-records-ui@GitHub': 'http://github.com/inveniosoftware/invenio-records-ui',
-        'invenio-records-ui@PyPI': 'http://pypi.python.org/pypi/invenio-records-ui/',
+        'invenio-records-ui@GitHub': 'https://github.com/inveniosoftware/invenio-records-ui',
+        'invenio-records-ui@PyPI': 'https://pypi.python.org/pypi/invenio-records-ui/',
     }
 }
 
@@ -329,3 +329,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+# Autodoc configuraton.
+autoclass_content = 'both'
