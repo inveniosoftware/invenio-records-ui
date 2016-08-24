@@ -52,7 +52,6 @@ import os
 from flask import Flask
 from flask_babelex import Babel
 from flask_celeryext import FlaskCeleryExt
-from flask_cli import FlaskCLI
 from invenio_db import InvenioDB, db
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
@@ -79,7 +78,6 @@ app.config.update(dict(
 ))
 
 FlaskCeleryExt(app)
-FlaskCLI(app)
 Babel(app)
 InvenioDB(app)
 InvenioPIDStore(app)
