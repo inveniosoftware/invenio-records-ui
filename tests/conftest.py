@@ -36,8 +36,6 @@ from flask_celeryext import FlaskCeleryExt
 from invenio_db import InvenioDB, db
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
-from sqlalchemy_utils.functions import create_database, database_exists, \
-    drop_database
 
 
 @pytest.fixture()
@@ -50,8 +48,8 @@ def app(request):
             'SQLALCHEMY_DATABASE_URI', 'sqlite://'
         ),
         CELERY_ALWAYS_EAGER=True,
-        CELERY_RESULT_BACKEND="cache",
-        CELERY_CACHE_BACKEND="memory",
+        CELERY_RESULT_BACKEND='cache',
+        CELERY_CACHE_BACKEND='memory',
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
         RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None,  # No permission checking
     )
