@@ -25,13 +25,23 @@
 
 """Flask application example for development with support for permissions.
 
-Run redis server and the the example development server:
+Run the Redis server.
+
+Run the the example development server:
 
 .. code-block:: console
 
    $ pip install -e .[all]
    $ cd examples
-   $ ./permsapp-recreate.sh
+   $ export FLASK_APP=permsapp.py
+   $ ./app-setup.sh
+   $ ./app-fixtures.sh
+
+Run example development server:
+
+.. code-block:: console
+
+    $ flask run --debugger -p 5000
 
 Try to view record 1::
 
@@ -46,6 +56,13 @@ Try now to open the record 2:
    http://localhost:5000/records/2
 
 As you can see, for this user the action is forbidden.
+
+To be able to uninstall the example app:
+
+.. code-block:: console
+
+    $ ./app-teardown.sh
+
 """
 
 from __future__ import absolute_import, print_function

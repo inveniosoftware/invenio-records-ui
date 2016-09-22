@@ -25,13 +25,23 @@
 
 """Minimal Flask application example for development.
 
+Run the Redis server.
+
 Run example development server:
 
 .. code-block:: console
 
    $ pip install -e .[all]
    $ cd examples
-   $ ./app-recreate.sh
+   $ export FLASK_APP=app.py
+   $ ./app-setup.sh
+   $ ./app-fixtures.sh
+
+Run example development server:
+
+.. code-block:: console
+
+    $ flask run --debugger -p 5000
 
 View some records in your browser::
 
@@ -43,6 +53,13 @@ View some records in your browser::
    http://localhost:5000/records/6
    http://localhost:5000/records/7
    http://localhost:5000/records/8
+
+To be able to uninstall the example app:
+
+.. code-block:: console
+
+    $ ./app-teardown.sh
+
 """
 
 from __future__ import absolute_import, print_function
