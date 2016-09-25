@@ -24,7 +24,7 @@ Installation
 Documentation
 -------------
 
-   http://pythonhosted.org/invenio-records-ui/
+   http://invenio-records-ui.readthedocs.io/
 
 Happy hacking and thanks for flying Invenio-Records-UI.
 

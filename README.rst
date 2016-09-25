@@ -46,4 +46,4 @@ User interface for Invenio-Records.
 *This is an experimental developer preview release.*
 
 * Free software: GPLv2 license
-* Documentation: https://pythonhosted.org/invenio-records-ui/
+* Documentation: https://invenio-records-ui.readthedocs.io/
