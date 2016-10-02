@@ -41,7 +41,9 @@ recursive-include invenio_records_ui *.mo
 include *.rst
 include *.sh
 include *.txt
+include .lgtm
 include LICENSE
+include MAINTAINERS
 include babel.ini
 include docs/requirements.txt
 include pytest.ini
