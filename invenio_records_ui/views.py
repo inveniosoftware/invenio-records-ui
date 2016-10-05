@@ -78,7 +78,7 @@ def create_blueprint(endpoints):
 
 def create_url_rule(endpoint, route=None, pid_type=None, template=None,
                     permission_factory_imp=None, view_imp=None,
-                    record_class=None, methods=None):
+                    record_class=None, methods=None, **kwargs):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -112,7 +112,9 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
                           getter=record_class.get_record),
         template=template or 'invenio_records_ui/detail.html',
         permission_factory=permission_factory,
-        view_method=view_method)
+        view_method=view_method,
+        **kwargs
+    )
     # Make view well-behaved for Flask-DebugToolbar
     view_func.__module__ = record_view.__module__
     view_func.__name__ = record_view.__name__
@@ -194,10 +196,10 @@ def record_view(pid_value=None, resolver=None, template=None,
                     next=request.url))
             abort(403)
 
-    return view_method(pid, record, template=template)
+    return view_method(pid, record, template=template, **kwargs)
 
 
-def default_view_method(pid, record, template=None):
+def default_view_method(pid, record, template=None, **kwargs):
     """Default view method.
 
     Sends record_viewed signal and renders template.
