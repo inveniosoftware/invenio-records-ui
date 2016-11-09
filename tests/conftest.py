@@ -34,6 +34,7 @@ from flask import Flask
 from flask_babelex import Babel
 from flask_celeryext import FlaskCeleryExt
 from invenio_db import InvenioDB, db
+from invenio_files_rest import InvenioFilesREST
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
@@ -58,6 +59,7 @@ def app(request):
     InvenioDB(app)
     InvenioPIDStore(app)
     InvenioRecords(app)
+    InvenioFilesREST(app)
 
     with app.app_context():
         db.create_all()

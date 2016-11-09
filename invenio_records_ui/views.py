@@ -194,17 +194,18 @@ def record_view(pid_value=None, resolver=None, template=None,
                     next=request.url))
             abort(403)
 
-    return view_method(pid, record, template=template)
+    return view_method(pid, record, template=template, **kwargs)
 
 
-def default_view_method(pid, record, template=None):
-    """Default view method.
+def default_view_method(pid, record, template=None, **kwargs):
+    r"""Default view method.
 
     Sends record_viewed signal and renders template.
 
     :param pid: PID object.
     :param record: Record object.
     :param template: Template to render.
+    :param \*\*kwargs: Additional view arguments based on URL rule.
     :returns: The rendered template.
     """
     record_viewed.send(

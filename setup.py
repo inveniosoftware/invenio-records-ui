@@ -34,9 +34,10 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
-    'invenio-access>=1.0.0a3',
-    'invenio-accounts>=1.0.0a6',
-    'invenio-db[mysql,postgresql]>=1.0.0a6',
+    'invenio-access>=1.0.0a11',
+    'invenio-accounts>=1.0.0b1',
+    'invenio-db[versioning,mysql,postgresql]>=1.0.0b3',
+    'invenio-records-files>=1.0.0a8',
     'isort>=4.2.2',
     'pydocstyle>=1.0.0',
     'pytest-cache>=1.0',
@@ -62,10 +63,10 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask>=0.11.1',
     'Flask-BabelEx>=0.9.2',
-    'invenio-records>=1.0.0a7',
-    'invenio-pidstore>=1.0.0a2',
+    'Flask>=0.11.1',
+    'invenio-pidstore>=1.0.0b1',
+    'invenio-records>=1.0.0b1',
 ]
 
 packages = find_packages()

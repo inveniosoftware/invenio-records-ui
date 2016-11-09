@@ -196,9 +196,9 @@ def test_changed_views(app):
         assert res.status_code == 200
 
 
-def custom_view(pid, record, template=None):
+def custom_view(pid, record, template=None, **kwargs):
     """Custom view function for testing."""
-    return 'TEST:{0}:{1}'.format(pid.pid_value, request.view_args['filename'])
+    return 'TEST:{0}:{1}'.format(pid.pid_value, kwargs.get('filename'))
 
 
 def custom_get_and_post(pid, record, template=None):
