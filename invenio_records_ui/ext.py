@@ -41,6 +41,18 @@ class _RecordUIState(object):
         """
         self.app = app
         self._permission_factory = None
+        self._export_formats = {}
+
+    def export_formats(self, pid_type):
+        """List of export formats."""
+        if pid_type not in self._export_formats:
+            fmts = self.app.config.get('RECORDS_UI_EXPORT_FORMATS', {}).get(
+                pid_type, {})
+            self._export_formats[pid_type] = sorted(
+                [(k, v) for k, v in fmts.items() if v],
+                key=lambda x: x[1]['order'],
+            )
+        return self._export_formats[pid_type]
 
     @property
     def permission_factory(self):

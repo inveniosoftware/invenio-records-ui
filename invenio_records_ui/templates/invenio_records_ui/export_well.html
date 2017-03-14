@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+{# -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -21,24 +21,13 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
-
-"""Utility."""
-
-from __future__ import absolute_import, print_function
-
-import six
-from werkzeug.utils import import_string
-
-
-def obj_or_import_string(value, default=None):
-    """Import string or return object.
-
-    :params value: Import path or class object to instantiate.
-    :params default: Default object to return if the import fails.
-    :returns: The imported object.
-    """
-    if isinstance(value, six.string_types):
-        return import_string(value)
-    elif value:
-        return value
-    return default
+-#}
+{%- set formats = export_formats(pid.pid_type) %}
+{%- if formats %}
+<dt>{{_('Export')}}</dt>
+<ul class="list-inline">
+  {%- for slug, fmt in formats %}
+  <li><a href="{{ url_for('invenio_records_ui.recid_export', pid_value=pid.pid_value, format=slug) }}">{{fmt['title']}}</a></li>
+  {%- endfor %}
+</ul>
+{%- endif %}

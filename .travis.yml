@@ -34,6 +34,11 @@ language: python
 
 matrix:
   fast_finish: true
+  allow_failures:
+    - python: "2.7"
+      env: REQUIREMENTS=devel SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio"
+    - python: "3.5"
+      env: REQUIREMENTS=devel SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio"
 
 cache:
   - pip

@@ -40,9 +40,15 @@ RECORDS_UI_ENDPOINTS = {
         "pid_type": "recid",
         "route": "/records/<pid_value>",
         "template": "invenio_records_ui/detail.html",
+    },
+    "recid_export": {
+        "pid_type": "recid",
+        "route": "/records/<pid_value>/export/<format>",
+        "view_imp": "invenio_records_ui.views.export",
+        "template": "invenio_records_ui/export.html",
     }
 }
-"""Default UI endpoints loaded.
+"""Default UI endpoints.
 
 This option can be overwritten to describe the endpoints of the different
 record types.
@@ -94,4 +100,24 @@ The structure of the dictionary is as follows:
     (Default: ``invenio_records.api:Record``)
 
 :param methods: List of methods supported. (Default: ``['GET']``)
+"""
+
+RECORDS_UI_EXPORT_FORMATS = {}
+"""Defaut record serialization views.
+
+The structure of the dictionary is as follows:
+
+.. code-block:: python
+
+    RECORDS_UI_EXPORT_FORMATS = {
+        {"<pid-type>": {
+            "<format-slug>": {
+                "title": "<export format title>",
+                "serializer": "<object or import path to record serializer>",
+                "order": 1,
+            },
+            ...
+        },
+        ...
+    }
 """

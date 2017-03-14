@@ -26,8 +26,10 @@
 
 from __future__ import absolute_import, print_function
 
+import json
 from functools import partial
 
+import six
 from flask import Blueprint, abort, current_app, redirect, render_template, \
     request, url_for
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError, \
@@ -39,6 +41,7 @@ from werkzeug.routing import BuildError
 from werkzeug.utils import import_string
 
 from .signals import record_viewed
+from .utils import obj_or_import_string
 
 current_permission_factory = LocalProxy(
     lambda: current_app.extensions['invenio-records-ui'].permission_factory)
@@ -69,6 +72,13 @@ def create_blueprint(endpoints):
             pid=error.pid,
             record=error.record or {},
         ), 410
+
+    @blueprint.context_processor
+    def inject_export_formats():
+        return dict(
+            export_formats=(
+                current_app.extensions['invenio-records-ui'].export_formats)
+            )
 
     for endpoint, options in (endpoints or {}).items():
         blueprint.add_url_rule(**create_url_rule(endpoint, **options))
@@ -218,3 +228,35 @@ def default_view_method(pid, record, template=None, **kwargs):
         pid=pid,
         record=record,
     )
+
+
+def export(pid, record, template=None, **kwargs):
+    r"""Record serialization view.
+
+    Serializes record with given format and renders record export template.
+
+    :param pid: PID object.
+    :param record: Record object.
+    :param template: Template to render.
+    :param \*\*kwargs: Additional view arguments based on URL rule.
+    :return: The rendered template.
+    """
+    formats = current_app.config.get('RECORDS_UI_EXPORT_FORMATS', {}).get(
+        pid.pid_type)
+    fmt = formats.get(request.view_args.get('format'))
+
+    if fmt is False:
+        # If value is set to False, it means it was deprecated.
+        abort(410)
+    elif fmt is None:
+        abort(404)
+    else:
+        serializer = obj_or_import_string(fmt['serializer'])
+        data = serializer.serialize(pid, record)
+        if isinstance(data, six.binary_type):
+            data = data.decode('utf8')
+
+        return render_template(
+            template, pid=pid, record=record, data=data,
+            format_title=fmt['title'],
+        )

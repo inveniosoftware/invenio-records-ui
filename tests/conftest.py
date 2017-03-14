@@ -27,6 +27,7 @@
 
 from __future__ import absolute_import, print_function
 
+import json
 import os
 
 import pytest
@@ -37,6 +38,20 @@ from invenio_db import InvenioDB, db
 from invenio_files_rest import InvenioFilesREST
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
+
+
+class DefaultJSONSerializer(object):
+
+    """Simple JSON serializer for testing."""
+
+    def serialize(self, pid, record):
+        """Serialize object to JSON.
+
+        :param pid: Persistent Identifier.
+        :param record: The :class:`invenio_records.api.Record` instance.
+        """
+        return json.dumps(record, sort_keys=True,
+                          indent=2, separators=(',', ': '))
 
 
 @pytest.fixture()
@@ -70,3 +85,8 @@ def app(request):
 
     request.addfinalizer(finalize)
     return app
+
+
+@pytest.fixture()
+def json_v1():
+    return DefaultJSONSerializer()

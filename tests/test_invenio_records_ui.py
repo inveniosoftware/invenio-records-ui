@@ -308,3 +308,50 @@ def test_permission(app):
     with app.test_client() as client:
         res = client.get(record_url)
         res.status_code == 403
+
+
+def test_record_export(app, json_v1):
+    """Test record export formats."""
+    app.config.update(dict(
+        RECORDS_UI_EXPORT_FORMATS=dict(
+            recid=dict(
+                json=dict(
+                    title='JSON',
+                    serializer=json_v1,
+                    order=1,
+                )
+            )
+        )
+    ))
+
+    InvenioRecordsUI(app)
+    setup_record_fixture(app)
+
+    with app.test_client() as client:
+        res = client.get('/records/1/export/json')
+        assert res.status_code == 200
+        res = client.get('/records/1/export/None')
+        assert res.status_code == 404
+
+
+def test_default_export_format(app, json_v1):
+    """Test default configuration for record export format"""
+    from invenio_records_ui.ext import _RecordUIState
+
+    app.config.update(dict(
+        RECORDS_UI_EXPORT_FORMATS=dict(
+            recid=dict(
+                json=dict(
+                    title='JSON',
+                    serializer='fictitious_json_serializer',
+                    order=1,
+                )
+            )
+        )
+    ))
+
+    record_ui_state = _RecordUIState(app)
+    default_format = [('json', {'title': 'JSON',
+                                'serializer': 'fictitious_json_serializer',
+                                'order': 1})]
+    assert default_format == record_ui_state.export_formats('recid')
