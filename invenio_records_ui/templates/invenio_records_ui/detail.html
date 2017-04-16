@@ -54,20 +54,63 @@
 
 {%- block page_body %}
 <div class="container">
-  {%- block record_title %}
-  <h2>
-    <small>{{ pid.pid_type }}</small> {{pid.pid_value}}
-  </h2>
-  {%- endblock %}
-  {%- block record_body %}
-  {% if record %}
-  <div class="panel panel-default">
-    <ul class="list-group">
-      {{ record_content(record) }}
-    </ul>
+  <div class="extra-info">
+    {%- if pid %}
+      {%- block record_control_number %}
+      <b>{{ _('control number:') }}</b>
+      {{ pid.pid_type }} {{pid.pid_value}}
+      {%- endblock %}
+    {% endif %}
+    </br>
+    {%- if 'publication_distribution_imprint' in record %}
+      {%- block record_publication_date %}
+        <b>{{ _('Publication date:') }}</b>
+        {{ record['publication_distribution_imprint'][0]['date_of_publication_distribution'][0] }}
+      {%- endblock %}
+    {% endif %}
+    </br>
+    {%- if 'other_standard_identifier' in record %}
+      {%- block record_other_standard_identifier %}
+        <b>{{ _('OAI Id:') }}</b>
+        {{ record['other_standard_identifier'][0]['standard_number_or_code'] }}
+      {%- endblock %}
+    {% endif %}
   </div>
+  <div class="body">
+    {%- if 'title_statement' in record %}
+      {%- block record_title %}
+        <h2>{{ record['title_statement']['title'] }} <br>
+        </h2>
+      {%- endblock %}
+    {% endif %}
+    {%- if 'main_entry_personal_name' in record %}
+      {%- block record_author %}
+        <p><i>
+          {{ record['main_entry_personal_name']['personal_name'] }}
+          {%- if 'added_entry_personal_name' in record %}
+            {{ record['added_entry_personal_name']
+                | map(attribute='personal_name') | join(', ') }}
+          {% endif %}
+        </i></p>
+      {%- endblock %}
+    {% endif %}
+    {%- if 'summary' in record %}
+      {%- block record_summary %}
+        <p>{{ record['summary'][0]['summary'] }}</p>
+      {%- endblock %}
+    {%- endif %}
+  </div>
+</div>
+<div class="raw">
+  {%- block record_raw %}
+  {% if record %}
+    <div class="panel panel-default">
+      <p>Record:</p>
+      <ul class="list-group">
+        {{ record_content(record) }}
+      </ul>
+    </div>
   {% endif %}
   {%- endblock %}
 </div>
 {%- endblock %}
-
