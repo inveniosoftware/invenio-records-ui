@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -26,7 +26,6 @@
 
 from __future__ import absolute_import, print_function
 
-import json
 from functools import partial
 
 import six
@@ -48,7 +47,7 @@ current_permission_factory = LocalProxy(
 
 
 def create_blueprint(endpoints):
-    """Factory for Invenio-Records-UI blueprint creation.
+    """Create Invenio-Records-UI blueprint.
 
     The factory installs one URL route per endpoint defined, and adds an
     error handler for rendering tombstones.
@@ -137,7 +136,7 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
 
 def record_view(pid_value=None, resolver=None, template=None,
                 permission_factory=None, view_method=None, **kwargs):
-    """Generic view for displaying a record.
+    """Display record view.
 
     The two parameters ``resolver`` and ``template`` should not be included
     in the URL rule, but instead set by creating a partially evaluated function
@@ -208,7 +207,7 @@ def record_view(pid_value=None, resolver=None, template=None,
 
 
 def default_view_method(pid, record, template=None, **kwargs):
-    r"""Default view method.
+    r"""Display default view.
 
     Sends record_viewed signal and renders template.
 
