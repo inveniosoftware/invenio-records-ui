@@ -1,15 +1,13 @@
 =============================
- Invenio-Records-UI v1.0.0a9
+ Invenio-Records-UI v1.0.0b1
 =============================
 
-Invenio-Records-UI v1.0.0a9 was released on March 16, 2017.
+Invenio-Records-UI v1.0.0b1 was released on August 10, 2017.
 
 About
 -----
 
 User interface for Invenio-Records.
-
-*This is an experimental developer preview release.*
 
 What's new
 ----------
@@ -19,7 +17,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-records-ui==1.0.0a9
+   $ pip install invenio-records-ui==1.0.0b1
 
 Documentation
 -------------
