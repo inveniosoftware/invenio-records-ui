@@ -9,6 +9,8 @@ About
 
 User interface for Invenio-Records.
 
+*This is an experimental developer preview release.*
+
 What's new
 ----------
 
@@ -22,13 +24,13 @@ Installation
 Documentation
 -------------
 
-   http://invenio-records-ui.readthedocs.io/
+   https://invenio-records-ui.readthedocs.io/
 
 Happy hacking and thanks for flying Invenio-Records-UI.
 
 | Invenio Development Team
 |   Email: info@inveniosoftware.org
 |   IRC: #invenio on irc.freenode.net
-|   Twitter: http://twitter.com/inveniosoftware
+|   Twitter: https://twitter.com/inveniosoftware
 |   GitHub: https://github.com/inveniosoftware/invenio-records-ui
 |   URL: http://inveniosoftware.org

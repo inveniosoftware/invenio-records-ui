@@ -48,7 +48,7 @@ tests_require = [
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.4.2',
+        'Sphinx>=1.5.1',
     ],
     'tests': tests_require,
 }
@@ -58,8 +58,8 @@ for reqs in extras_require.values():
     extras_require['all'].extend(reqs)
 
 setup_requires = [
-    'pytest-runner>=2.6.2',
     'Babel>=1.3',
+    'pytest-runner>=2.6.2',
 ]
 
 install_requires = [
@@ -70,6 +70,7 @@ install_requires = [
 ]
 
 packages = find_packages()
+
 
 # Get the version string. Cannot be done with import!
 g = {}
@@ -96,7 +97,7 @@ setup(
             'invenio_records_ui = invenio_records_ui:InvenioRecordsUI',
         ],
         'invenio_i18n.translations': [
-            'messages = invenio_records_ui'
+            'messages = invenio_records_ui',
         ],
     },
     extras_require=extras_require,
@@ -116,6 +117,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
     ],
 )
