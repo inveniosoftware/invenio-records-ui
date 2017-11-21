@@ -25,6 +25,8 @@
 
 """Minimal Flask application example for development.
 
+SPHINX-START
+
 Run the Redis server.
 
 Run example development server:
@@ -60,6 +62,7 @@ To be able to uninstall the example app:
 
     $ ./app-teardown.sh
 
+SPHINX-END
 """
 
 from __future__ import absolute_import, print_function
