@@ -1,6 +1,6 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2015, 2016 CERN.
+    Copyright (C) 2015, 2016, 2017 CERN.
 
     Invenio is free software; you can redistribute it
     and/or modify it under the terms of the GNU General Public License as
@@ -28,6 +28,7 @@ Authors
 User interface for Invenio-Records.
 
 - Alizee Pace <alizee.pace@gmail.com>
+- CERN <info@inveniosoftware.org>
 - Jiri Kuncar <jiri.kuncar@cern.ch>
 - Lars Holm Nielsen <lars.holm.nielsen@cern.ch>
 - Nicolas Harraudeau <nicolas.harraudeau@cern.ch>
