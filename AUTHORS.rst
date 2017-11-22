@@ -28,7 +28,6 @@ Authors
 User interface for Invenio-Records.
 
 - Alizee Pace <alizee.pace@gmail.com>
-- CERN <info@inveniosoftware.org>
 - Jiri Kuncar <jiri.kuncar@cern.ch>
 - Lars Holm Nielsen <lars.holm.nielsen@cern.ch>
 - Nicolas Harraudeau <nicolas.harraudeau@cern.ch>
