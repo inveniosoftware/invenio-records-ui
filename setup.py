@@ -21,7 +21,6 @@ tests_require = [
     'invenio-access>=1.0.0a11',
     'invenio-accounts>=1.0.0b1',
     'invenio-db[versioning,mysql,postgresql]>=1.0.0b3',
-    'invenio-records-files>=1.0.0a8',
     'isort>=4.2.2',
     'pydocstyle>=1.0.0',
     'pytest-cov>=1.8.0',
