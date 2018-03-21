@@ -5,13 +5,17 @@
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
-Authors
-=======
+Contributors
+============
 
-User interface for Invenio-Records.
-
-- Alizee Pace <alizee.pace@gmail.com>
-- Jiri Kuncar <jiri.kuncar@cern.ch>
-- Lars Holm Nielsen <lars.holm.nielsen@cern.ch>
-- Nicolas Harraudeau <nicolas.harraudeau@cern.ch>
-- Tibor Simko <tibor.simko@cern.ch>
+- Alexander Ioannidis
+- Alizee Pace
+- Diego Rodriguez
+- Dinos Kousidis
+- Harris Tzovanakis
+- Jacopo Notarstefano
+- Jiri Kuncar
+- Lars Holm Nielsen
+- Leonardo Rossi
+- Nicolas Harraudeau
+- Tibor Simko
