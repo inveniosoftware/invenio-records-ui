@@ -61,6 +61,7 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
 from invenio_records_ui import InvenioRecordsUI
+from invenio_records_ui.views import create_blueprint_from_app
 
 # create application's instance directory. Needed for this example only.
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -87,6 +88,7 @@ InvenioDB(app)
 InvenioPIDStore(app)
 InvenioRecords(app)
 InvenioRecordsUI(app)
+app.register_blueprint(create_blueprint_from_app(app))
 
 
 rec1_uuid = 'deadbeef-1234-5678-ba11-b100dc0ffee5'

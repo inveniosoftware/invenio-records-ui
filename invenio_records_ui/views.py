@@ -30,6 +30,21 @@ current_permission_factory = LocalProxy(
     lambda: current_app.extensions['invenio-records-ui'].permission_factory)
 
 
+def create_blueprint_from_app(app):
+    """Create Invenio-Records-UI blueprint from a Flask application.
+
+    .. note::
+
+        This function assumes that the application has loaded all extensions
+        that want to register REST endpoints via the ``RECORDS_UI_ENDPOINTS``
+        configuration variable.
+
+    :params app: A Flask application.
+    :returns: Configured blueprint.
+    """
+    return create_blueprint(app.config.get('RECORDS_UI_ENDPOINTS'))
+
+
 def create_blueprint(endpoints):
     """Create Invenio-Records-UI blueprint.
 

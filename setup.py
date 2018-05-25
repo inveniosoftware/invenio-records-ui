@@ -78,6 +78,10 @@ setup(
         'invenio_base.apps': [
             'invenio_records_ui = invenio_records_ui:InvenioRecordsUI',
         ],
+        'invenio_base.blueprints': [
+            ('invenio_records_ui = '
+             'invenio_records_ui.views:create_blueprint_from_app'),
+        ],
         'invenio_i18n.translations': [
             'messages = invenio_records_ui',
         ],
