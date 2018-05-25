@@ -76,11 +76,14 @@ variables in the template context:
 Installing endpoints
 ~~~~~~~~~~~~~~~~~~~~
 We have now configured which endpoint we want, so we can go ahead and install
-the extension (note, in this example we switch off the permission checking
-capabilities by setting ``RECORDS_UI_DEFAULT_PERMISSION_FACTORY`` to ``None``):
+the extension and register the endpoints (note, in this example we switch off
+the permission checking capabilities by setting
+``RECORDS_UI_DEFAULT_PERMISSION_FACTORY`` to ``None``):
 
+>>> from invenio_records_ui.views import create_blueprint_from_app
 >>> app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY'] = None
 >>> ext_records_ui = InvenioRecordsUI(app)
+>>> app.register_blueprint(create_blueprint_from_app(app))
 
 In order for the following examples to work, you need to work within an
 Flask application context so let's push one:

@@ -26,6 +26,7 @@ from invenio_records.api import Record
 
 from invenio_records_ui import InvenioRecordsUI
 from invenio_records_ui.signals import record_viewed
+from invenio_records_ui.views import create_blueprint_from_app
 
 
 def setup_record_fixture(app):
@@ -85,18 +86,21 @@ def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
     ext = InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     assert 'invenio-records-ui' in app.extensions
 
     app = Flask('testapp')
     ext = InvenioRecordsUI()
     assert 'invenio-records-ui' not in app.extensions
     ext.init_app(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     assert 'invenio-records-ui' in app.extensions
 
 
 def test_view(app):
     """Test view."""
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     setup_record_fixture(app)
 
     with app.test_client() as client:
@@ -130,6 +134,7 @@ def test_view(app):
 def test_signal(app):
     """Test view."""
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     setup_record_fixture(app)
 
     called = {'record-viewed': False}
@@ -167,6 +172,7 @@ def test_changed_views(app):
         )
     ))
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     setup_record_fixture(app)
 
     with app.test_client() as client:
@@ -217,6 +223,7 @@ def test_custom_view_method(app):
         )
     ))
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     setup_record_fixture(app)
 
     with app.test_client() as client:
@@ -254,6 +261,7 @@ def test_permission(app):
     )
     Menu(app)
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     accounts = InvenioAccounts(app)
     app.register_blueprint(accounts_blueprint)
     InvenioAccess(app)
@@ -309,6 +317,7 @@ def test_record_export(app, json_v1):
     ))
 
     InvenioRecordsUI(app)
+    app.register_blueprint(create_blueprint_from_app(app))
     setup_record_fixture(app)
 
     with app.test_client() as client:

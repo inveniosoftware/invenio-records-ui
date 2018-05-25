@@ -12,7 +12,6 @@ from __future__ import absolute_import, print_function
 
 from . import config
 from .utils import obj_or_import_string
-from .views import create_blueprint
 
 
 class _RecordUIState(object):
@@ -68,11 +67,6 @@ class InvenioRecordsUI(object):
         :param app: The Flask application.
         """
         self.init_config(app)
-
-        # Register records blueprints
-        app.register_blueprint(
-            create_blueprint(app.config['RECORDS_UI_ENDPOINTS']))
-
         app.extensions['invenio-records-ui'] = _RecordUIState(app)
 
     def init_config(self, app):
