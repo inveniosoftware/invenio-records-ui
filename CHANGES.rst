@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version 1.0.1 (released 2020-03-12)
+
+- Adds centralised management of flask dependency through invenio-base
+- drops support for Python 2.7
+
+
 Version 1.0.1 (released 2018-05-25)
 
 - Changes dynamic blueprint registration to after the extension
