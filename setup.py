@@ -19,7 +19,7 @@ tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
     'invenio-access>=1.0.0',
-    'invenio-accounts>=1.0.0',
+    'invenio-accounts>=1.2.0',
     'invenio-db[versioning,mysql,postgresql]>=1.0.0',
     'isort>=4.2.2',
     'pydocstyle>=1.0.0',
@@ -45,9 +45,9 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask-BabelEx>=0.9.3',
-    'Flask>=0.11.1',
-    'invenio-pidstore>=1.0.0',
+    'invenio-base>=1.2.2',
+    'invenio-i18n>=1.2.0',
+    'invenio-pidstore>=1.2.0',
     'invenio-records>=1.0.0',
 ]
 

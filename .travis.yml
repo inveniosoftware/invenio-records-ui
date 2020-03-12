@@ -12,8 +12,6 @@ addons:
 notifications:
   email: false
 
-sudo: false
-
 language: python
 
 matrix:
@@ -34,10 +32,11 @@ env:
   - REQUIREMENTS=devel SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio"
 
 python:
-  - "2.7"
-  - "3.5"
+  - "3.6"
+  - "3.7"
 
 before_install:
+  - "pip uninstall -y six"
   - "nvm install 6; nvm use 6"
   - "travis_retry pip install --upgrade pip setuptools py"
   - "travis_retry pip install twine wheel coveralls requirements-builder"
@@ -62,8 +61,9 @@ deploy:
   password:
     secure: "XMDOpWARuHXAqJmQoFU4sJF1iNwlgJs8MI48fN2UeiqYRIWAV6kJG/hB6mVLVuWxwpEm7K4wtL97HTzLpzGtDwk2zxgMIc0dm8R0N6+rcXvnc0Rs3X1A0dOJIofrIe21yai6yqtF1zPDtMsg5DirJNF37+UzZ9mgx8jplRvKIGQIHtgxkQJX/IWonvFhsSD5DKZFixy7yrukxRpXxzT0XpejTu8yWTtEdl95ruMT5xTi9nnuy9NjmfW4A/mSvcjc/JttnhcAQX0VhewkRGHY4DzQooPs4zoFmwK8OTzWDpowskNqnH/+d8ianji2Ra6OqZF3rGb2BPoWoUEywVjzoUAM6Y7jDhlubJyrGj/ZQLmAFkorkQsr5CyLD4pTz1oHJ1O2LTRe/xrnM3iF4nvrnYCwgasu/Jbso94UMxR+DPVfx3WjFSgHrbRr4oXweVQ0Lp9/gsYeAo4HD4LGRa7w7RhcIwPhPxVfufhqJ3jGDeDAMnNaeuQp3JI4JPEOq5SBEPR7XxEAIySe9wjCgmecS3YT/tU4dBJAoIZDc37U44RNetkgwaah0aZZ/e5UILg0oPW2Xy4GQopLelGOVePqLNPdwhiCFffy5MkCzz6Ubk0yZzDOI9anWZSCZaNilUMo7ZjJHzOR/3RveBgPbebAfHS/p9UyrK0uCVO/GxhBmJE="
   distributions: "compile_catalog sdist bdist_wheel"
+  skip_existing: true
   on:
     tags: true
-    python: "2.7"
+    python: "3.6"
     repo: inveniosoftware/invenio-records-ui
     condition: $DEPLOY = true
