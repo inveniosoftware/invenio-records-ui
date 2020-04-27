@@ -21,7 +21,6 @@ from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 from werkzeug.local import LocalProxy
 from werkzeug.routing import BuildError
-from werkzeug.utils import import_string
 
 from .signals import record_viewed
 from .utils import obj_or_import_string
@@ -108,10 +107,9 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     assert route
     assert pid_type
 
-    permission_factory = import_string(permission_factory_imp) if \
-        permission_factory_imp else None
-    view_method = import_string(view_imp) if view_imp else default_view_method
-    record_class = import_string(record_class) if record_class else Record
+    permission_factory = obj_or_import_string(permission_factory_imp, None)
+    view_method = obj_or_import_string(view_imp, default_view_method)
+    record_class = obj_or_import_string(record_class, Record)
     methods = methods or ['GET']
 
     view_func = partial(
