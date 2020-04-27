@@ -19,7 +19,6 @@ Invenio-Records-UI.
    installation
    configuration
    usage
-   examplesapp
 
 
 API Reference

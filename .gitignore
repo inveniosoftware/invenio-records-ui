@@ -58,9 +58,5 @@ docs/_build/
 # PyBuilder
 target/
 
-examples/instance/
-examples/static/
-examples/*.db
-
 # Vim swapfiles
 .*.sw?
