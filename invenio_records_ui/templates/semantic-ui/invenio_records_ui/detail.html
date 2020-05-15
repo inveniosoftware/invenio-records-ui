@@ -1,0 +1,57 @@
+{# -*- coding: utf-8 -*-
+
+  This file is part of Invenio.
+  Copyright (C) 2015-2020 CERN.
+
+  Invenio is free software; you can redistribute it and/or modify it
+  under the terms of the MIT License; see LICENSE file for more details.
+#}
+{%- extends config.RECORDS_UI_BASE_TEMPLATE %}
+
+{%- macro record_content(data) %}
+  {% for key, value in data.items() recursive %}
+    <div class="content">
+    {% if value is mapping %}
+        <strong>{{ key }}</strong>
+        <ul>{{ loop(value.items()) }}</ul>
+    {% elif value is iterable and value is not string %}
+        <strong>{{ key }}:</strong>
+        <ol>
+        {% for item in value %}
+          <li>
+          {% if item is mapping %}
+            <ul>
+              {{ record_content(item) }}
+            </ul>
+          {% else %}
+            {{ item }}
+          {% endif %}
+          </li>
+        {% endfor %}
+        </ol>
+    {% else %}
+      <strong>{{ key }}:</strong> {{ value }}
+    {% endif %}
+      </div>
+  {% endfor %}
+{%- endmacro %}
+
+{%- block page_body %}
+<div class="ui grid container">
+  <div class="row"></div>
+  <div class="row">
+  {%- block record_title %}
+  <h2>
+    <small>{{ pid.pid_type }}</small> {{pid.pid_value}}
+  </h2>
+  {%- endblock %}
+  {%- block record_body %}
+  {% if record %}
+  <div class="ui fluid card">
+      {{ record_content(record) }}
+  </div>
+  {% endif %}
+  {%- endblock %}
+</div>
+</div>
+{%- endblock %}
