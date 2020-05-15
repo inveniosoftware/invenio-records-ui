@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.0a1 (released 2020-05-15)
+
+- Integrates Semantic-UI templates
+
 Version 1.0.1 (released 2020-03-12)
 
 - Adds centralised management of flask dependency through invenio-base
