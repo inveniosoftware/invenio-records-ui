@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 1.2.0 (released 2020-12-02)
+
+- Integrates Semantic-UI templates
+- Migrates CI from Travis to GitHub Actions
+
 Version 1.2.0a1 (released 2020-05-15)
 
 - Integrates Semantic-UI templates
