@@ -15,7 +15,7 @@ from blinker import Namespace
 _signals = Namespace()
 
 
-record_viewed = _signals.signal('record-viewed')
+record_viewed = _signals.signal("record-viewed")
 """Signal sent when a record is viewed on any endpoint.
 
 Parameters:

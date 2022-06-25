@@ -29,11 +29,12 @@ class _RecordUIState(object):
     def export_formats(self, pid_type):
         """List of export formats."""
         if pid_type not in self._export_formats:
-            fmts = self.app.config.get('RECORDS_UI_EXPORT_FORMATS', {}).get(
-                pid_type, {})
+            fmts = self.app.config.get("RECORDS_UI_EXPORT_FORMATS", {}).get(
+                pid_type, {}
+            )
             self._export_formats[pid_type] = sorted(
                 [(k, v) for k, v in fmts.items() if v],
-                key=lambda x: x[1]['order'],
+                key=lambda x: x[1]["order"],
             )
         return self._export_formats[pid_type]
 
@@ -41,7 +42,7 @@ class _RecordUIState(object):
     def permission_factory(self):
         """Load default permission factory."""
         if self._permission_factory is None:
-            imp = self.app.config['RECORDS_UI_DEFAULT_PERMISSION_FACTORY']
+            imp = self.app.config["RECORDS_UI_DEFAULT_PERMISSION_FACTORY"]
             self._permission_factory = obj_or_import_string(imp)
         return self._permission_factory
 
@@ -67,7 +68,7 @@ class InvenioRecordsUI(object):
         :param app: The Flask application.
         """
         self.init_config(app)
-        app.extensions['invenio-records-ui'] = _RecordUIState(app)
+        app.extensions["invenio-records-ui"] = _RecordUIState(app)
 
     def init_config(self, app):
         """Initialize configuration on application.
@@ -75,10 +76,10 @@ class InvenioRecordsUI(object):
         :param app: The Flask application.
         """
         app.config.setdefault(
-            'RECORDS_UI_BASE_TEMPLATE',
-            app.config.get('BASE_TEMPLATE', 'invenio_records_ui/base.html')
+            "RECORDS_UI_BASE_TEMPLATE",
+            app.config.get("BASE_TEMPLATE", "invenio_records_ui/base.html"),
         )
 
         for k in dir(config):
-            if k.startswith('RECORDS_UI_'):
+            if k.startswith("RECORDS_UI_"):
                 app.config.setdefault(k, getattr(config, k))

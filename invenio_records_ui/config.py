@@ -30,7 +30,7 @@ RECORDS_UI_ENDPOINTS = {
         "route": "/records/<pid_value>/export/<format>",
         "view_imp": "invenio_records_ui.views.export",
         "template": "invenio_records_ui/export.html",
-    }
+    },
 }
 """Default UI endpoints.
 

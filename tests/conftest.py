@@ -32,22 +32,19 @@ class DefaultJSONSerializer(object):
         :param pid: Persistent Identifier.
         :param record: The :class:`invenio_records.api.Record` instance.
         """
-        return json.dumps(record, sort_keys=True,
-                          indent=2, separators=(',', ': '))
+        return json.dumps(record, sort_keys=True, indent=2, separators=(",", ": "))
 
 
 @pytest.fixture()
 def app(request):
     """Flask application fixture."""
-    app = Flask('testapp')
+    app = Flask("testapp")
     app.config.update(
         TESTING=True,
-        SQLALCHEMY_DATABASE_URI=os.environ.get(
-            'SQLALCHEMY_DATABASE_URI', 'sqlite://'
-        ),
+        SQLALCHEMY_DATABASE_URI=os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite://"),
         CELERY_ALWAYS_EAGER=True,
-        CELERY_RESULT_BACKEND='cache',
-        CELERY_CACHE_BACKEND='memory',
+        CELERY_RESULT_BACKEND="cache",
+        CELERY_CACHE_BACKEND="memory",
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
         RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None,  # No permission checking
     )

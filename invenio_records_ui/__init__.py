@@ -296,6 +296,6 @@ from __future__ import absolute_import, print_function
 
 from .ext import InvenioRecordsUI
 
-__version__ = '1.2.0'
+__version__ = "1.2.0"
 
-__all__ = ('__version__', 'InvenioRecordsUI')
+__all__ = ("__version__", "InvenioRecordsUI")

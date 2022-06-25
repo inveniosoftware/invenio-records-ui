@@ -13,10 +13,22 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 import six
-from flask import Blueprint, abort, current_app, redirect, render_template, \
-    request, url_for
-from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError, \
-    PIDMissingObjectError, PIDRedirectedError, PIDUnregistered
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from invenio_pidstore.errors import (
+    PIDDeletedError,
+    PIDDoesNotExistError,
+    PIDMissingObjectError,
+    PIDRedirectedError,
+    PIDUnregistered,
+)
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
 from werkzeug.local import LocalProxy
@@ -27,7 +39,8 @@ from .signals import record_viewed
 from .utils import obj_or_import_string
 
 current_permission_factory = LocalProxy(
-    lambda: current_app.extensions['invenio-records-ui'].permission_factory)
+    lambda: current_app.extensions["invenio-records-ui"].permission_factory
+)
 
 
 def create_blueprint_from_app(app):
@@ -42,7 +55,7 @@ def create_blueprint_from_app(app):
     :params app: A Flask application.
     :returns: Configured blueprint.
     """
-    return create_blueprint(app.config.get('RECORDS_UI_ENDPOINTS'))
+    return create_blueprint(app.config.get("RECORDS_UI_ENDPOINTS"))
 
 
 def create_blueprint(endpoints):
@@ -56,27 +69,29 @@ def create_blueprint(endpoints):
     :returns: The initialized blueprint.
     """
     blueprint = Blueprint(
-        'invenio_records_ui',
+        "invenio_records_ui",
         __name__,
-        url_prefix='',
-        template_folder='templates',
-        static_folder='static',
+        url_prefix="",
+        template_folder="templates",
+        static_folder="static",
     )
 
     @blueprint.errorhandler(PIDDeletedError)
     def tombstone_errorhandler(error):
-        return render_template(
-            current_app.config['RECORDS_UI_TOMBSTONE_TEMPLATE'],
-            pid=error.pid,
-            record=error.record or {},
-        ), 410
+        return (
+            render_template(
+                current_app.config["RECORDS_UI_TOMBSTONE_TEMPLATE"],
+                pid=error.pid,
+                record=error.record or {},
+            ),
+            410,
+        )
 
     @blueprint.context_processor
     def inject_export_formats():
         return dict(
-            export_formats=(
-                current_app.extensions['invenio-records-ui'].export_formats)
-            )
+            export_formats=(current_app.extensions["invenio-records-ui"].export_formats)
+        )
 
     for endpoint, options in (endpoints or {}).items():
         blueprint.add_url_rule(**create_url_rule(endpoint, **options))
@@ -84,9 +99,16 @@ def create_blueprint(endpoints):
     return blueprint
 
 
-def create_url_rule(endpoint, route=None, pid_type=None, template=None,
-                    permission_factory_imp=None, view_imp=None,
-                    record_class=None, methods=None):
+def create_url_rule(
+    endpoint,
+    route=None,
+    pid_type=None,
+    template=None,
+    permission_factory_imp=None,
+    view_imp=None,
+    record_class=None,
+    methods=None,
+):
     """Create Werkzeug URL rule for a specific endpoint.
 
     The method takes care of creating a persistent identifier resolver
@@ -108,19 +130,22 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     assert route
     assert pid_type
 
-    permission_factory = import_string(permission_factory_imp) if \
-        permission_factory_imp else None
+    permission_factory = (
+        import_string(permission_factory_imp) if permission_factory_imp else None
+    )
     view_method = import_string(view_imp) if view_imp else default_view_method
     record_class = import_string(record_class) if record_class else Record
-    methods = methods or ['GET']
+    methods = methods or ["GET"]
 
     view_func = partial(
         record_view,
-        resolver=Resolver(pid_type=pid_type, object_type='rec',
-                          getter=record_class.get_record),
-        template=template or 'invenio_records_ui/detail.html',
+        resolver=Resolver(
+            pid_type=pid_type, object_type="rec", getter=record_class.get_record
+        ),
+        template=template or "invenio_records_ui/detail.html",
         permission_factory=permission_factory,
-        view_method=view_method)
+        view_method=view_method,
+    )
     # Make view well-behaved for Flask-DebugToolbar
     view_func.__module__ = record_view.__module__
     view_func.__name__ = record_view.__name__
@@ -133,8 +158,14 @@ def create_url_rule(endpoint, route=None, pid_type=None, template=None,
     )
 
 
-def record_view(pid_value=None, resolver=None, template=None,
-                permission_factory=None, view_method=None, **kwargs):
+def record_view(
+    pid_value=None,
+    resolver=None,
+    template=None,
+    permission_factory=None,
+    view_method=None,
+    **kwargs
+):
     """Display record view.
 
     The two parameters ``resolver`` and ``template`` should not be included
@@ -171,22 +202,27 @@ def record_view(pid_value=None, resolver=None, template=None,
         abort(404)
     except PIDMissingObjectError as e:
         current_app.logger.exception(
-            "No object assigned to {0}.".format(e.pid),
-            extra={'pid': e.pid})
+            "No object assigned to {0}.".format(e.pid), extra={"pid": e.pid}
+        )
         abort(500)
     except PIDRedirectedError as e:
         try:
-            return redirect(url_for(
-                '.{0}'.format(e.destination_pid.pid_type),
-                pid_value=e.destination_pid.pid_value))
+            return redirect(
+                url_for(
+                    ".{0}".format(e.destination_pid.pid_type),
+                    pid_value=e.destination_pid.pid_value,
+                )
+            )
         except BuildError:
             current_app.logger.exception(
                 "Invalid redirect - pid_type '{0}' endpoint missing.".format(
-                    e.destination_pid.pid_type),
+                    e.destination_pid.pid_type
+                ),
                 extra={
-                    'pid': e.pid,
-                    'destination_pid': e.destination_pid,
-                })
+                    "pid": e.pid,
+                    "destination_pid": e.destination_pid,
+                },
+            )
             abort(500)
 
     # Check permissions
@@ -196,10 +232,14 @@ def record_view(pid_value=None, resolver=None, template=None,
         # operations in permission object.
         if not permission_factory(record).can():
             from flask_login import current_user
+
             if not current_user.is_authenticated:
-                return redirect(url_for(
-                    current_app.config['RECORDS_UI_LOGIN_ENDPOINT'],
-                    next=request.url))
+                return redirect(
+                    url_for(
+                        current_app.config["RECORDS_UI_LOGIN_ENDPOINT"],
+                        next=request.url,
+                    )
+                )
             abort(403)
 
     return view_method(pid, record, template=template, **kwargs)
@@ -239,9 +279,8 @@ def export(pid, record, template=None, **kwargs):
     :param \*\*kwargs: Additional view arguments based on URL rule.
     :return: The rendered template.
     """
-    formats = current_app.config.get('RECORDS_UI_EXPORT_FORMATS', {}).get(
-        pid.pid_type)
-    fmt = formats.get(request.view_args.get('format'))
+    formats = current_app.config.get("RECORDS_UI_EXPORT_FORMATS", {}).get(pid.pid_type)
+    fmt = formats.get(request.view_args.get("format"))
 
     if fmt is False:
         # If value is set to False, it means it was deprecated.
@@ -249,12 +288,15 @@ def export(pid, record, template=None, **kwargs):
     elif fmt is None:
         abort(404)
     else:
-        serializer = obj_or_import_string(fmt['serializer'])
+        serializer = obj_or_import_string(fmt["serializer"])
         data = serializer.serialize(pid, record)
         if isinstance(data, six.binary_type):
-            data = data.decode('utf8')
+            data = data.decode("utf8")
 
         return render_template(
-            template, pid=pid, record=record, data=data,
-            format_title=fmt['title'],
+            template,
+            pid=pid,
+            record=record,
+            data=data,
+            format_title=fmt["title"],
         )

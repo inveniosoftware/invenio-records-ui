@@ -65,22 +65,25 @@ from invenio_records.api import Record
 
 def my_permission_factory(record, *args, **kwargs):
     """My permission factory."""
+
     def can(self):
         rec = Record.get_record(record.id)
-        return rec.get('access', '') == 'open'
-    return type('MyPermissionChecker', (), {'can': can})()
+        return rec.get("access", "") == "open"
+
+    return type("MyPermissionChecker", (), {"can": can})()
 
 
 # Install Principal and Login extensions
 app.config.update(
     ACCOUNTS_USE_CELERY=False,
-    SECRET_KEY='CHANGE_ME',
-    SECURITY_PASSWORD_SALT='CHANGE_ME_ALSO',
-    SQLALCHEMY_DATABASE_URI=os.environ.get('SQLALCHEMY_DATABASE_URI',
-                                           'sqlite:///permsapp.db'),
+    SECRET_KEY="CHANGE_ME",
+    SECURITY_PASSWORD_SALT="CHANGE_ME_ALSO",
+    SQLALCHEMY_DATABASE_URI=os.environ.get(
+        "SQLALCHEMY_DATABASE_URI", "sqlite:///permsapp.db"
+    ),
     # conftest switches off permission checking, so re-enable it for this
     # app.
-    RECORDS_UI_DEFAULT_PERMISSION_FACTORY=my_permission_factory
+    RECORDS_UI_DEFAULT_PERMISSION_FACTORY=my_permission_factory,
 )
 
 
