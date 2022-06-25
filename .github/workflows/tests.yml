@@ -20,25 +20,34 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-          python-version: [3.6, 3.7, 3.8]
-          requirements-level: [min, pypi]
-          db-service: [postgresql9]
+          python-version: [3.7, 3.8, 3.9]
+          requirements-level: [pypi]
+          db-service: [postgresql10, postgresql13]
 
           exclude:
+          - python-version: 3.7
+            db-service: postgresql13
           - python-version: 3.8
-            requirements-level: min
+            db-service: postgresql10
+          - python-version: 3.9
+            db-service: postgresql10
 
           include:
-          - db-service: postgresql9
+          - db-service: postgresql10
             DB: postgresql
-            POSTGRESQL_VERSION: POSTGRESQL_9_LATEST
+            POSTGRESQL_VERSION: POSTGRESQL_10_LATEST
             SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
-            EXTRAS: "all,postgresql"
+          - db-service: postgresql13
+            DB: postgresql
+            POSTGRESQL_VERSION: POSTGRESQL_13_LATEST
+            SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://invenio:invenio@localhost:5432/invenio"
+
 
     env:
       SQLALCHEMY_DATABASE_URI: ${{matrix.SQLALCHEMY_DATABASE_URI}}
       POSTGRESQL_VERSION: ${{matrix.POSTGRESQL_VERSION}}
       DB: ${{ matrix.DB }}
+      EXTRAS: tests
 
     steps:
       - name: Checkout
@@ -53,7 +62,7 @@ jobs:
         run: |
           pip uninstall -y six
           pip install wheel requirements-builder
-          requirements-builder -e ${{ matrix.EXTRAS }} ${{ matrix.requirements-file }} --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
+          requirements-builder -e "$EXTRAS" ${{ matrix.requirements-file }} --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -64,7 +73,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r .${{matrix.requirements-level}}-${{ matrix.python-version }}-requirements.txt
-          pip install .[${{ matrix.EXTRAS }}]
+          pip install .[$EXTRAS]
           pip freeze
 
       - name: Run tests

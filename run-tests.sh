@@ -14,12 +14,16 @@ set -o errexit
 # Quit on unbound symbols
 set -o nounset
 
-pydocstyle invenio_records_ui tests docs
-isort invenio_records_ui tests --check-only --diff
-check-manifest
-sphinx-build -qnNW docs docs/_build/html
-docker-services-cli up ${DB}
-python setup.py test
+# Always bring down docker services
+function cleanup() {
+    eval "$(docker-services-cli down --env)"
+}
+trap cleanup EXIT
+
+
+python -m check_manifest
+python -m sphinx.cmd.build -qnNW docs docs/_build/html
+eval "$(docker-services-cli up --db ${DB:-postgresql} --env)"
+python -m pytest
 tests_exit_code=$?
-docker-services-cli down
 exit "$tests_exit_code"
