@@ -52,7 +52,7 @@ jobs:
       - name: Generate dependencies
         run: |
           pip uninstall -y six
-          python -m pip install --upgrade pip setuptools py wheel requirements-builder
+          pip install wheel requirements-builder
           requirements-builder -e ${{ matrix.EXTRAS }} ${{ matrix.requirements-file }} --level=${{ matrix.requirements-level }} setup.py > .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
 
       - name: Cache pip
