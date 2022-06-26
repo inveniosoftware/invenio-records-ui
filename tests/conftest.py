@@ -47,6 +47,19 @@ def app(request):
         CELERY_CACHE_BACKEND="memory",
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
         RECORDS_UI_DEFAULT_PERMISSION_FACTORY=None,  # No permission checking
+        APP_THEME=["semantic-ui"],
+        THEME_ICONS={
+            "semantic-ui": {
+                "key": "key icon",
+                "link": "linkify icon",
+                "shield": "shield alternate icon",
+                "user": "user icon",
+                "codepen": "codepen icon",
+                "cogs": "cogs icon",
+                # Special catch all:
+                "*": "{} icon",
+            }
+        },
     )
     FlaskCeleryExt(app)
     Babel(app)

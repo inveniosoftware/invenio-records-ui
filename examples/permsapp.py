@@ -84,6 +84,19 @@ app.config.update(
     # conftest switches off permission checking, so re-enable it for this
     # app.
     RECORDS_UI_DEFAULT_PERMISSION_FACTORY=my_permission_factory,
+    APP_THEME=["semantic-ui"],
+    THEME_ICONS={
+        "semantic-ui": {
+            "key": "key icon",
+            "link": "linkify icon",
+            "shield": "shield alternate icon",
+            "user": "user icon",
+            "codepen": "codepen icon",
+            "cogs": "cogs icon",
+            # Special catch all:
+            "*": "{} icon",
+        }
+    },
 )
 
 
