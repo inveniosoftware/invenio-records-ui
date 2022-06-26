@@ -197,7 +197,7 @@ redirected:
 >>> res.status_code
 302
 >>> print(res.location)
-http://localhost/records/1
+/records/1
 
 Naming of endpoints
 ~~~~~~~~~~~~~~~~~~~
