@@ -149,6 +149,7 @@ def create_url_rule(
     # Make view well-behaved for Flask-DebugToolbar
     view_func.__module__ = record_view.__module__
     view_func.__name__ = record_view.__name__
+    view_func.__qualname__ = record_view.__qualname__
 
     return dict(
         endpoint=endpoint,
