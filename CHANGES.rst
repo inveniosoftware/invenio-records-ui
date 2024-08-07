@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.1 (released 2024-08-07)
+
+- views: add `__qualname__` to fix views due to flask-limiter
+
 Version 1.2.0 (released 2020-12-02)
 
 - Integrates Semantic-UI templates
