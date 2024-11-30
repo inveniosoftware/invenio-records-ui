@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 2.0.0 (release 2024-12-06)
+
+- setup: bump major dependencies
+
 Version 1.2.2 (release 2024-12-01)
 
 - fix: tests by changed api
