@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -16,9 +17,9 @@ import os
 
 import pytest
 from flask import Flask
-from flask_babelex import Babel
 from flask_celeryext import FlaskCeleryExt
 from invenio_db import InvenioDB, db
+from invenio_i18n import Babel
 from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
