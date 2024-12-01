@@ -1,12 +1,22 @@
 ..
     This file is part of Invenio.
     Copyright (C) 2015-2018 CERN.
+    Copyright (C) 2024 Graz University of Technology.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 1.2.2 (release 2024-12-01)
+
+- fix: tests by changed api
+- tests: migrate flask_babelex to invenio_i18n
+- global: remove examples
+- fix: SphinxWarning
+- setup: change to reusable workflows
+- setup: pin dependencies
 
 Version 1.2.1 (released 2024-08-07)
 
