@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2015-2018 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -18,8 +19,9 @@ from flask_menu import Menu
 from flask_security.utils import encrypt_password
 from invenio_access import InvenioAccess
 from invenio_accounts import InvenioAccounts
-from invenio_accounts.views import blueprint as accounts_blueprint
+from invenio_accounts.views.settings import create_settings_blueprint
 from invenio_db import db
+from invenio_i18n import InvenioI18N
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.resolver import Resolver
 from invenio_records.api import Record
@@ -279,8 +281,9 @@ def test_permission(app):
     InvenioRecordsUI(app)
     app.register_blueprint(create_blueprint_from_app(app))
     accounts = InvenioAccounts(app)
-    app.register_blueprint(accounts_blueprint)
+    create_settings_blueprint(app)
     InvenioAccess(app)
+    InvenioI18N(app)
     setup_record_fixture(app)
 
     # Create admin
