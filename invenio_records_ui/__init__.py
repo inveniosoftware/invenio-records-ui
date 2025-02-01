@@ -45,6 +45,11 @@ Invenio-DB so you need to initialize these extensions first:
 >>> ext_pidstore = InvenioPIDStore(app)
 >>> ext_records = InvenioRecords(app)
 
+You also need to initialize invenio-i18n:
+
+>>> from invenio_i18n import Babel
+>>> ext_babel = Babel(app)
+
 Configuration
 ~~~~~~~~~~~~~
 Before we initialize the InvenioRecordsUI extension, we need to configure which
