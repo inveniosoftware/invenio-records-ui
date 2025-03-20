@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.0.3 (released 2025-03-20)
+
+- i18n: mark missing strings for translations
+
 Version 1.0.2 (released 2020-04-28)
 
 - Allows values passed to ``RECORDS_UI_ENDPOINTS`` to also be objects instead
