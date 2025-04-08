@@ -24,9 +24,9 @@
 #    $ tx pull -a
 
 [main]
-host = https://www.transifex.com
+host = https://app.transifex.com
 
-[invenio.invenio-records-ui-messages]
+[o:inveniosoftware:p:invenio:r:invenio-records-ui-messages]
 file_filter = invenio_records_ui/translations/<lang>/LC_MESSAGES/messages.po
 source_file = invenio_records_ui/translations/messages.pot
 source_lang = en
