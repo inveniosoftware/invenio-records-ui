@@ -9,6 +9,16 @@
 Changes
 =======
 
+Version 1.3.0 (release 2025-04-29)
+
+- i18n:pulled translations
+- i18n:push translations
+- fix: update Transifex host URL and section header in config
+- i18n: update translation template for version 2.0.0
+- i18n: translate export & tombstone templates
+- fix: setuptools require underscores instead of dashes
+- feat: add i18n workflows for pulling and pushing translations
+
 Version 1.2.2 (release 2024-12-01)
 
 - fix: tests by changed api
