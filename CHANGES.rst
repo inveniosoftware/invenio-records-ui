@@ -9,6 +9,16 @@
 Changes
 =======
 
+Version v2.1.0 (released 2025-07-17)
+
+- i18n: force pull languages
+- i18n: run py extract msgs
+- i18n: update Transifex host and config
+- feat: add i18n workflows for pulling and pushing translations
+- fix: setuptools require underscores instead of dashes
+- doctest: including invenio-i18n to doctest
+- i18n: translate export & tombstone templates
+
 Version 2.0.0 (release 2024-12-06)
 
 - setup: bump major dependencies
