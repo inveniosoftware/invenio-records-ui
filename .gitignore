@@ -64,3 +64,4 @@ examples/*.db
 
 # Vim swapfiles
 .*.sw?
+uv.lock
