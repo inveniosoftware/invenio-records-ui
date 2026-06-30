@@ -160,7 +160,7 @@ def record_view(
     template=None,
     permission_factory=None,
     view_method=None,
-    **kwargs
+    **kwargs,
 ):
     """Display record view.
 
