@@ -7,6 +7,13 @@
 Changes
 =======
 
+Version v4.0.1 (released 2026-07-21)
+
+- chore(setup): migrate from setuptools to hatchling
+- chore(cleanup): remove outdated and unnecessary file
+- chore(format): reformat with black
+- chore(licenses): update license headers to use SPDX
+
 Version v4.0.0 (released 2026-05-29)
 
 - chore(setup): bump dependencies
@@ -21,7 +28,7 @@ Version v2.1.2 (released 2025-12-09)
 
 Version v2.1.1 (released 2025-10-22)
 
-- i18n: pulled translations 
+- i18n: pulled translations
 
 Version v2.1.0 (released 2025-07-17)
 
