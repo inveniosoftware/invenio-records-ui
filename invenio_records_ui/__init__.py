@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2015-2018 CERN.
 # SPDX-FileCopyrightText: 2024-2026 Graz University of Technology.
-# SPDX-FileCopyrightText: 2025 KTH Royal Institute of Technology.
+# SPDX-FileCopyrightText: 2025-2026 KTH Royal Institute of Technology.
 # SPDX-License-Identifier: MIT
 
 r"""Module for displaying records.
@@ -298,6 +298,6 @@ from __future__ import absolute_import, print_function
 
 from .ext import InvenioRecordsUI
 
-__version__ = "4.1.0"
+__version__ = "4.1.1"
 
 __all__ = ("__version__", "InvenioRecordsUI")
