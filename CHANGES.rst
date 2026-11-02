@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version v5.0.3 (released 2026-11-02)
+
+- chore: apply ruff linter fixes
+- chore: remove compatibility layer with python 2 via `six`
+
 Version v5.0.2 (released 2026-08-04)
 
 - fix(build): include mo files

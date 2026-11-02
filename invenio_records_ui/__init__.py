@@ -297,6 +297,6 @@ argument to your endpoints configuration:
 
 from .ext import InvenioRecordsUI
 
-__version__ = "5.0.2"
+__version__ = "5.0.3"
 
 __all__ = ("InvenioRecordsUI", "__version__")
