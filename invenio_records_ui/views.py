@@ -7,7 +7,6 @@ from __future__ import absolute_import, print_function
 
 from functools import partial
 
-import six
 from flask import (
     Blueprint,
     abort,
@@ -286,7 +285,7 @@ def export(pid, record, template=None, **kwargs):
     else:
         serializer = obj_or_import_string(fmt["serializer"])
         data = serializer.serialize(pid, record)
-        if isinstance(data, six.binary_type):
+        if isinstance(data, bytes):
             data = data.decode("utf8")
 
         return render_template(
