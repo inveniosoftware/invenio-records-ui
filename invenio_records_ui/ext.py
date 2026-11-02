@@ -3,13 +3,11 @@
 
 """Flask extension for Invenio-Records-UI."""
 
-from __future__ import absolute_import, print_function
-
 from . import config
 from .utils import obj_or_import_string
 
 
-class _RecordUIState(object):
+class _RecordUIState:
     """Record UI state."""
 
     def __init__(self, app):
@@ -42,7 +40,7 @@ class _RecordUIState(object):
         return self._permission_factory
 
 
-class InvenioRecordsUI(object):
+class InvenioRecordsUI:
     """Invenio-Records-UI extension.
 
     The extension takes care of setting default configuration and registering

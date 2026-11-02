@@ -5,8 +5,6 @@
 
 """Module tests."""
 
-from __future__ import absolute_import, print_function
-
 import uuid
 
 from flask import Flask, request, url_for
@@ -155,33 +153,32 @@ def test_signal(app):
         assert pid
         called["record-viewed"] = record["recid"]
 
-    with app.test_client() as client:
-        with record_viewed.connected_to(_signal_sent):
-            res = client.get("/records/1")
-            assert res.status_code == 200
-            assert called["record-viewed"] == 1
+    with app.test_client() as client, record_viewed.connected_to(_signal_sent):
+        res = client.get("/records/1")
+        assert res.status_code == 200
+        assert called["record-viewed"] == 1
 
 
 def test_changed_views(app):
     """Test view."""
     app.config.update(
-        dict(
-            PIDSTORE_DATACITE_DOI_PREFIX="10.4321",
-            RECORDS_UI_ENDPOINTS=dict(
-                recid=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>",
-                ),
-                references=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>/references",
-                ),
-                doi=dict(
-                    pid_type="doi",
-                    route="/doi/<path:pid_value>",
-                ),
-            ),
-        )
+        {
+            "PIDSTORE_DATACITE_DOI_PREFIX": "10.4321",
+            "RECORDS_UI_ENDPOINTS": {
+                "recid": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>",
+                },
+                "references": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>/references",
+                },
+                "doi": {
+                    "pid_type": "doi",
+                    "route": "/doi/<path:pid_value>",
+                },
+            },
+        }
     )
     InvenioRecordsUI(app)
     app.register_blueprint(create_blueprint_from_app(app))
@@ -200,41 +197,41 @@ def test_changed_views(app):
 
 def custom_view(pid, record, template=None, **kwargs):
     """Custom view function for testing."""
-    return "TEST:{0}:{1}".format(pid.pid_value, kwargs.get("filename"))
+    return "TEST:{}:{}".format(pid.pid_value, kwargs.get("filename"))
 
 
 def custom_get_and_post(pid, record, template=None):
     """Custom view function for testing GET/POST."""
-    return "TEST:{0}:{1}".format(pid.pid_value, request.method)
+    return f"TEST:{pid.pid_value}:{request.method}"
 
 
 def test_custom_view_method(app):
     """Test view."""
     app.config.update(
-        dict(
-            PIDSTORE_DATACITE_DOI_PREFIX="10.4321",
-            RECORDS_UI_ENDPOINTS=dict(
-                recid=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>",
-                ),
-                record_with_param=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>/export/<format>",
-                ),
-                recid_custom=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>/custom/<filename>",
-                    view_imp="test_invenio_records_ui:custom_view",
-                ),
-                recid_get_post=dict(
-                    pid_type="recid",
-                    route="/records/<pid_value>/custom_get_and_post",
-                    view_imp="test_invenio_records_ui:custom_get_and_post",
-                    methods=["GET", "POST"],
-                ),
-            ),
-        )
+        {
+            "PIDSTORE_DATACITE_DOI_PREFIX": "10.4321",
+            "RECORDS_UI_ENDPOINTS": {
+                "recid": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>",
+                },
+                "record_with_param": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>/export/<format>",
+                },
+                "recid_custom": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>/custom/<filename>",
+                    "view_imp": "test_invenio_records_ui:custom_view",
+                },
+                "recid_get_post": {
+                    "pid_type": "recid",
+                    "route": "/records/<pid_value>/custom_get_and_post",
+                    "view_imp": "test_invenio_records_ui:custom_get_and_post",
+                    "methods": ["GET", "POST"],
+                },
+            },
+        }
     )
     InvenioRecordsUI(app)
     app.register_blueprint(create_blueprint_from_app(app))
@@ -291,7 +288,7 @@ def test_permission(app):
 
         # Get record 1
         r = Resolver(pid_type="recid", object_type="rec", getter=Record.get_record)
-        dummy_pid, record = r.resolve("1")
+        _dummy_pid, _record = r.resolve("1")
 
         db.session.commit()
 
@@ -319,17 +316,17 @@ def test_permission(app):
 def test_record_export(app, json_v1):
     """Test record export formats."""
     app.config.update(
-        dict(
-            RECORDS_UI_EXPORT_FORMATS=dict(
-                recid=dict(
-                    json=dict(
-                        title="JSON",
-                        serializer=json_v1,
-                        order=1,
-                    )
-                )
-            )
-        )
+        {
+            "RECORDS_UI_EXPORT_FORMATS": {
+                "recid": {
+                    "json": {
+                        "title": "JSON",
+                        "serializer": json_v1,
+                        "order": 1,
+                    }
+                }
+            }
+        }
     )
 
     InvenioRecordsUI(app)
@@ -348,17 +345,17 @@ def test_default_export_format(app, json_v1):
     from invenio_records_ui.ext import _RecordUIState
 
     app.config.update(
-        dict(
-            RECORDS_UI_EXPORT_FORMATS=dict(
-                recid=dict(
-                    json=dict(
-                        title="JSON",
-                        serializer="fictitious_json_serializer",
-                        order=1,
-                    )
-                )
-            )
-        )
+        {
+            "RECORDS_UI_EXPORT_FORMATS": {
+                "recid": {
+                    "json": {
+                        "title": "JSON",
+                        "serializer": "fictitious_json_serializer",
+                        "order": 1,
+                    }
+                }
+            }
+        }
     )
 
     record_ui_state = _RecordUIState(app)

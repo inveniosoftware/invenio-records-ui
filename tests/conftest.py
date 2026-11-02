@@ -5,8 +5,6 @@
 
 """Pytest configuration."""
 
-from __future__ import absolute_import, print_function
-
 import json
 import os
 
@@ -19,7 +17,7 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 
 
-class DefaultJSONSerializer(object):
+class DefaultJSONSerializer:
     """Simple JSON serializer for testing."""
 
     def serialize(self, pid, record):

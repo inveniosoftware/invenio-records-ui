@@ -3,8 +3,6 @@
 
 """Record module signals."""
 
-from __future__ import absolute_import, print_function
-
 from blinker import Namespace
 
 _signals = Namespace()
