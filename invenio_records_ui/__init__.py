@@ -295,10 +295,8 @@ argument to your endpoints configuration:
 ... )
 """
 
-from __future__ import absolute_import, print_function
-
 from .ext import InvenioRecordsUI
 
 __version__ = "5.0.2"
 
-__all__ = ("__version__", "InvenioRecordsUI")
+__all__ = ("InvenioRecordsUI", "__version__")

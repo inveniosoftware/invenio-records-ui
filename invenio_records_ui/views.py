@@ -3,8 +3,6 @@
 
 """Factory for creating a blueprint for Invenio-Records-UI."""
 
-from __future__ import absolute_import, print_function
-
 from functools import partial
 
 from flask import (
@@ -83,9 +81,11 @@ def create_blueprint(endpoints):
 
     @blueprint.context_processor
     def inject_export_formats():
-        return dict(
-            export_formats=(current_app.extensions["invenio-records-ui"].export_formats)
-        )
+        return {
+            "export_formats": (
+                current_app.extensions["invenio-records-ui"].export_formats
+            )
+        }
 
     for endpoint, options in (endpoints or {}).items():
         blueprint.add_url_rule(**create_url_rule(endpoint, **options))
@@ -145,12 +145,12 @@ def create_url_rule(
     view_func.__name__ = record_view.__name__
     view_func.__qualname__ = record_view.__qualname__
 
-    return dict(
-        endpoint=endpoint,
-        rule=route,
-        view_func=view_func,
-        methods=methods,
-    )
+    return {
+        "endpoint": endpoint,
+        "rule": route,
+        "view_func": view_func,
+        "methods": methods,
+    }
 
 
 def record_view(
@@ -197,22 +197,20 @@ def record_view(
         abort(404)
     except PIDMissingObjectError as e:
         current_app.logger.exception(
-            "No object assigned to {0}.".format(e.pid), extra={"pid": e.pid}
+            f"No object assigned to {e.pid}.", extra={"pid": e.pid}
         )
         abort(500)
     except PIDRedirectedError as e:
         try:
             return redirect(
                 url_for(
-                    ".{0}".format(e.destination_pid.pid_type),
+                    f".{e.destination_pid.pid_type}",
                     pid_value=e.destination_pid.pid_value,
                 )
             )
         except BuildError:
             current_app.logger.exception(
-                "Invalid redirect - pid_type '{0}' endpoint missing.".format(
-                    e.destination_pid.pid_type
-                ),
+                f"Invalid redirect - pid_type '{e.destination_pid.pid_type}' endpoint missing.",
                 extra={
                     "pid": e.pid,
                     "destination_pid": e.destination_pid,

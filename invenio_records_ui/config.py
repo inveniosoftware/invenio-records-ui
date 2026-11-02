@@ -3,8 +3,6 @@
 
 """Flask extension for Invenio-Records-UI."""
 
-from __future__ import absolute_import, print_function
-
 RECORDS_UI_TOMBSTONE_TEMPLATE = "invenio_records_ui/tombstone.html"
 """Configure the tombstone template."""
 

@@ -3,8 +3,6 @@
 
 """Helpers."""
 
-from __future__ import absolute_import, print_function
-
 from flask_security import current_user
 
 
