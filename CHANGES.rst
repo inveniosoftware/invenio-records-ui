@@ -7,6 +7,10 @@
 Changes
 =======
 
+Version v4.1.2 (released 2026-11-12)
+
+- chore: remove compatibility layer with python 2 via `six`
+
 Version v4.1.1 (released 2026-08-27)
 
 - i18n: pulled translations
